@@ -28,8 +28,7 @@ COPY Backend ./Backend
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 
 ENV PORT=8080
-ENV PYTHONUNBUFFERED=1
 EXPOSE 8080
 
 WORKDIR /app/Backend
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD uvicorn main:app --host 0.0.0.0 --port $PORT

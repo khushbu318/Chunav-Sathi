@@ -265,3 +265,7 @@ async def find_booths(
 
 # Serve frontend static assets from the build output.
 app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="frontend")
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "timestamp": "2026-05-02T14:39:23+00:00"}
