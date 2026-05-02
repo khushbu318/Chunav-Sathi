@@ -1,19 +1,16 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   UserPlus,
   Search,
   MapPin,
   CheckCircle2,
-  Fingerprint,
   UserCheck,
   ClipboardCheck,
   ChevronRight,
   ChevronLeft,
-  Info,
   ShieldCheck,
   Smartphone,
-  MousePointer2,
 } from "lucide-react";
 
 const stages = [

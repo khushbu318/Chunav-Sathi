@@ -1,4 +1,3 @@
-import React from 'react';
 import { ChevronRight, Landmark, Map as MapIcon, Home, Scale } from 'lucide-react';
 
 const LearnCard = ({ icon: Icon, title, sub }: any) => (

@@ -1,22 +1,15 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ChevronRight,
   ChevronDown,
   Landmark,
   Map as MapIcon,
   Home,
   Scale,
-  Users,
-  Calendar,
   CheckCircle,
-  BarChart3,
   AlertCircle,
   Zap,
-  Target,
   BookOpen,
-  Shield,
-  Clock,
 } from 'lucide-react';
 
 interface Section {
@@ -25,12 +18,6 @@ interface Section {
   icon: React.ReactNode;
   color: string;
   gradient: string;
-}
-
-interface Content {
-  title: string;
-  description: string;
-  details: string[];
 }
 
 const ElectionProcess: React.FC = () => {

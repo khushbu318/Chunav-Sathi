@@ -17,12 +17,6 @@ const TimelineItemComponent: React.FC<TimelineItemComponentProps> = ({
   onToggleExpand,
 }) => {
   const date = new Date(event.date + 'T00:00:00');
-  const dateDisplay = date.toLocaleDateString('en-IN', {
-    weekday: 'short',
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
 
   return (
     <motion.div
