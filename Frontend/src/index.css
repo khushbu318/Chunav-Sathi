@@ -60,10 +60,245 @@ body {
 .right-bg { position: absolute; inset: 0; opacity: 0.04; background-image: repeating-linear-gradient(45deg, #e9edef 0, #e9edef 1px, transparent 0, transparent 50%); background-size: 20px 20px; pointer-events: none; }
 
 /* ── HOME ── */
-.panel-home { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 16px; position: relative; z-index: 1; padding: 20px; }
-.home-logo { width: 74px; height: 74px; border-radius: 50%; background: linear-gradient(135deg, #ff6b35, #f7c948); display: flex; align-items: center; justify-content: center; font-size: 32px; }
-.quick-card { background: #202c33; border: 0.5px solid #2a3942; border-radius: 12px; padding: 14px; cursor: pointer; text-align: center; width: 152px; transition: background 0.15s; }
-.quick-card:hover { background: #2a3942; }
+.panel-home { 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  height: 100%; 
+  gap: 20px; 
+  position: relative; 
+  z-index: 1; 
+  padding: 40px 20px;
+  background: linear-gradient(135deg, rgba(0, 168, 132, 0.08) 0%, rgba(255, 107, 53, 0.08) 100%);
+  overflow-y: auto;
+}
+
+.home-logo { 
+  width: 100px; 
+  height: 100px; 
+  border-radius: 50%; 
+  background: linear-gradient(135deg, #ff6b35 0%, #f7c948 50%, #00a884 100%);
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-size: 48px;
+  box-shadow: 
+    0 10px 40px rgba(255, 107, 53, 0.4),
+    0 0 60px rgba(247, 201, 72, 0.2),
+    inset -2px -2px 8px rgba(0, 0, 0, 0.3),
+    inset 2px 2px 8px rgba(255, 255, 255, 0.1);
+  animation: float 3s ease-in-out infinite, glow-pulse 3s ease-in-out infinite;
+  position: relative;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.home-logo:hover {
+  transform: scale(1.08);
+}
+
+.home-logo::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.3) 0%, rgba(247, 201, 72, 0.3) 100%);
+  animation: pulse-ring 2s ease-out infinite;
+  z-index: -1;
+}
+
+.panel-home > .text-center {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: slide-in-bottom 0.6s ease-out 0.1s both;
+}
+
+.panel-home .text-\[22px\] {
+  background: linear-gradient(135deg, #00a884, #f7c948, #ff6b35);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: rotate-gradient 6s ease infinite;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.panel-home .text-\[13px\] {
+  background: linear-gradient(135deg, #8696a0 0%, #aebac1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: slide-in-bottom 0.6s ease-out 0.2s both;
+}
+
+/* ── BADGE PILLS ── */
+.panel-home .flex.gap-2 {
+  animation: slide-in-bottom 0.6s ease-out 0.3s both;
+}
+
+.panel-home span[class*="bg-\[#"] {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 9999px;
+  backdrop-filter: blur(10px);
+  font-weight: 500;
+  letter-spacing: 0.8px;
+  transform: translateY(0);
+  padding: 0.5rem 1rem !important;
+  line-height: 1.5;
+  display: inline-block;
+  font-size: 0.85rem;
+}
+
+.panel-home span[class*="bg-\[#"]:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+.panel-home .bg-\[#0d2e27\] {
+  background: linear-gradient(135deg, rgba(0, 168, 132, 0.25), rgba(0, 168, 132, 0.1)) !important;
+  border-color: rgba(0, 168, 132, 0.4) !important;
+  box-shadow: 0 4px 15px rgba(0, 168, 132, 0.2), inset 0 1px 2px rgba(255, 255, 255, 0.1);
+}
+
+.panel-home .bg-\[#0d2e27\]:hover {
+  background: linear-gradient(135deg, rgba(0, 168, 132, 0.35), rgba(0, 168, 132, 0.2)) !important;
+  box-shadow: 0 8px 25px rgba(0, 168, 132, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.2);
+}
+
+.panel-home .bg-\[#2e2a0d\] {
+  background: linear-gradient(135deg, rgba(247, 201, 72, 0.25), rgba(247, 201, 72, 0.1)) !important;
+  border-color: rgba(247, 201, 72, 0.4) !important;
+  box-shadow: 0 4px 15px rgba(247, 201, 72, 0.2), inset 0 1px 2px rgba(255, 255, 255, 0.1);
+}
+
+.panel-home .bg-\[#2e2a0d\]:hover {
+  background: linear-gradient(135deg, rgba(247, 201, 72, 0.35), rgba(247, 201, 72, 0.2)) !important;
+  box-shadow: 0 8px 25px rgba(247, 201, 72, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.2);
+}
+
+.panel-home .bg-\[#1a2731\] {
+  background: linear-gradient(135deg, rgba(26, 39, 49, 0.8), rgba(26, 39, 49, 0.5)) !important;
+  border-color: rgba(166, 166, 166, 0.3) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 2px rgba(255, 255, 255, 0.08);
+}
+
+.panel-home .bg-\[#1a2731\]:hover {
+  background: linear-gradient(135deg, rgba(26, 39, 49, 0.9), rgba(26, 39, 49, 0.6)) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.1);
+}
+
+/* ── QUICK CARDS ── */
+.panel-home .flex.gap-3 {
+  animation: slide-in-bottom 0.6s ease-out 0.4s both;
+}
+
+.quick-card { 
+  background: linear-gradient(135deg, rgba(32, 44, 51, 0.8), rgba(42, 57, 66, 0.5));
+  border: 1px solid rgba(0, 168, 132, 0.15);
+  border-radius: 16px; 
+  padding: 20px 16px; 
+  cursor: pointer; 
+  text-align: center; 
+  width: 160px; 
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  box-shadow: 
+    0 4px 15px rgba(0, 0, 0, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.05),
+    0 0 30px rgba(0, 168, 132, 0.08);
+  animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.quick-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(247, 201, 72, 0.3), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.quick-card::after {
+  content: '';
+  position: absolute;
+  inset: -100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.quick-card:hover::before {
+  opacity: 1;
+}
+
+.quick-card:hover {
+  background: linear-gradient(135deg, rgba(42, 57, 66, 0.95), rgba(52, 67, 76, 0.7));
+  border-color: rgba(0, 168, 132, 0.4);
+  box-shadow: 
+    0 12px 40px rgba(0, 168, 132, 0.25),
+    inset 0 1px 2px rgba(255, 255, 255, 0.1),
+    0 0 50px rgba(0, 168, 132, 0.15);
+  transform: translateY(-8px) scale(1.02);
+}
+
+.quick-card:active {
+  transform: translateY(-4px) scale(0.98);
+}
+
+.quick-card .text-3xl {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin: -16px auto 12px;
+  background: linear-gradient(135deg, rgba(0, 168, 132, 0.2), rgba(247, 201, 72, 0.1));
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  font-size: 32px;
+  border: 1px solid rgba(0, 168, 132, 0.2);
+}
+
+.quick-card:hover .text-3xl {
+  background: linear-gradient(135deg, rgba(0, 168, 132, 0.3), rgba(247, 201, 72, 0.2));
+  transform: scale(1.15) rotate(5deg);
+  box-shadow: 0 8px 20px rgba(0, 168, 132, 0.25);
+  border-color: rgba(0, 168, 132, 0.4);
+}
+
+.quick-card .text-\[13px\] {
+  color: #e9edef;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: color 0.3s ease;
+}
+
+.quick-card:hover .text-\[13px\] {
+  color: #00a884;
+  text-shadow: 0 0 10px rgba(0, 168, 132, 0.4);
+}
+
+.quick-card .text-\[11px\] {
+  color: #8696a0;
+  margin-top: 6px;
+  transition: all 0.3s ease;
+  font-size: 11px;
+  letter-spacing: 0.2px;
+}
+
+.quick-card:hover .text-\[11px\] {
+  color: #aebac1;
+}
 
 /* ── FEATURE PANELS ── */
 .feature-panel { display: flex; flex-direction: column; height: 100%; position: relative; z-index: 1; }

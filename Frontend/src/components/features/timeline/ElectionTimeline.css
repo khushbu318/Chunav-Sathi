@@ -151,8 +151,8 @@
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 50%;
-  background: var(--timeline-panel);
-  border: 3px solid var(--timeline-border);
+  background: var(--timeline-accent);
+  border: 3px solid var(--timeline-accent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -161,29 +161,7 @@
   z-index: 2;
   color: var(--timeline-text);
   font-weight: 700;
-}
-
-.timeline-item.completed .timeline-dot {
-  background: var(--timeline-green);
-  border-color: var(--timeline-green);
-  box-shadow: 0 0 0 6px rgba(0, 168, 132, 0.15);
-}
-
-.timeline-item.ongoing .timeline-dot {
-  background: var(--timeline-yellow);
-  border-color: var(--timeline-yellow);
-  box-shadow: 0 0 0 6px rgba(247, 201, 72, 0.3);
-  animation: dotPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes dotPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.15); }
-}
-
-.timeline-item.upcoming .timeline-dot {
-  background: var(--timeline-border);
-  border-color: var(--timeline-subtext);
+  box-shadow: 0 0 0 6px rgba(255, 111, 0, 0.15);
 }
 
 /* Timeline item header */
@@ -240,31 +218,11 @@
   margin-bottom: 0.75rem;
 }
 
-/* Status badge */
-.timeline-status {
-  display: inline-block;
-  padding: 0.35rem 0.85rem;
-  border-radius: 14px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  transition: all var(--transition-fast);
-}
-
-.timeline-status.completed {
-  background: rgba(0, 168, 132, 0.2);
-  color: var(--timeline-green);
-}
-
-.timeline-status.ongoing {
-  background: rgba(247, 201, 72, 0.2);
-  color: var(--timeline-yellow);
-}
-
-.timeline-status.upcoming {
-  background: rgba(255, 111, 0, 0.2);
-  color: var(--timeline-orange);
+/* Inline source links (on card itself) */
+.timeline-sources-inline {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--timeline-border);
 }
 
 /* ─── Expandable Details ────────────────────────────────────────── */
@@ -292,23 +250,6 @@
   background: var(--timeline-hover);
   padding: 1rem;
   border-radius: 8px;
-}
-
-.timeline-sources {
-  background: var(--timeline-hover);
-  border-radius: 8px;
-  padding: 0.875rem;
-  border-left: 3px solid var(--timeline-green);
-}
-
-.timeline-sources-title {
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--timeline-green);
-  margin-bottom: 0.75rem;
-  display: block;
-  letter-spacing: 0.3px;
 }
 
 .timeline-source-link {

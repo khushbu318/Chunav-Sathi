@@ -42,7 +42,7 @@ const TimelineItemComponent: React.FC<TimelineItemComponentProps> = ({
 
   return (
     <motion.div
-      className={`timeline-item ${event.status} ${isExpanded ? 'expanded' : ''}`}
+      className={`timeline-item ${isExpanded ? 'expanded' : ''}`}
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.3 }}
@@ -57,39 +57,15 @@ const TimelineItemComponent: React.FC<TimelineItemComponentProps> = ({
         </div>
         <div className="timeline-item-meta">
           <div className="timeline-date">
-            {dateDisplay}
-            <br />
             {event.timelineLabel && (
               <span className="ml-2 text-indigo-400 font-semibold">{event.timelineLabel}</span>
             )}
           </div>
           <h3 className="timeline-title">{event.title}</h3>
           <p className="timeline-description">{event.description}</p>
-        </div>
-      </div>
-
-      <AnimatePresence>
-        <div className="timeline-item-expandable">
-          <div className="timeline-details">
-            <p>{event.details}</p>
-            {(event.importance === 'critical' || event.importance === 'high') && (
-              <div
-                style={{
-                  marginTop: '0.75rem',
-                  padding: '0.75rem',
-                  background: 'rgba(255, 111, 0, 0.1)',
-                  borderRadius: '6px',
-                  borderLeft: '3px solid rgb(255, 111, 0)',
-                }}
-              >
-                <strong style={{ color: 'rgb(255, 111, 0)' }}>Important event</strong>
-              </div>
-            )}
-          </div>
 
           {event.sources.length > 0 && (
-            <div className="timeline-sources">
-              <span className="timeline-sources-title">Source Links</span>
+            <div className="timeline-sources-inline">
               <div className="flex flex-wrap gap-2">
                 {event.sources.map((source, idx) => (
                   <a
@@ -107,6 +83,14 @@ const TimelineItemComponent: React.FC<TimelineItemComponentProps> = ({
               </div>
             </div>
           )}
+        </div>
+      </div>
+
+      <AnimatePresence>
+        <div className="timeline-item-expandable">
+          <div className="timeline-details">
+            <p>{event.details}</p>
+          </div>
         </div>
       </AnimatePresence>
 

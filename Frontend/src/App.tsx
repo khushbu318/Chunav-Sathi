@@ -114,8 +114,8 @@ const HomePanel = ({ onQuickAccess }: any) => (
       </div>
     </div>
     <div className="flex gap-2 flex-wrap justify-center">
-      <span className="bg-[#0d2e27] text-whatsapp-green px-3 py-1 rounded-full text-xs font-medium border border-whatsapp-green/20">15 languages</span>
-      <span className="bg-[#2e2a0d] text-whatsapp-yellow px-3 py-1 rounded-full text-xs font-medium border border-whatsapp-yellow/20">Voice-first</span>
+      <span className="bg-[#0d2e27] text-whatsapp-green px-3 py-1 rounded-full text-xs font-medium border border-whatsapp-green/20">8 languages</span>
+      <span className="bg-[#2e2a0d] text-whatsapp-yellow px-3 py-1 rounded-full text-xs font-medium border border-whatsapp-yellow/20">Google Maps</span>
       <span className="bg-[#1a2731] text-whatsapp-subtext px-3 py-1 rounded-full text-xs font-medium border border-whatsapp-border">Gemini AI</span>
     </div>
     <div className="flex gap-3 justify-center flex-wrap mt-2">
@@ -147,7 +147,7 @@ export default function App() {
   const [isCalling, setIsCalling] = useState(false);
   const [chatInput, setChatInput] = useState('');
   const [messages, setMessages] = useState([
-    { type: 'bot', text: `Namaste! 🙏 Main hoon aapka **Chunav Sathi**. Chunav ke bare mein kuch bhi puchein — text ya voice mein!\n\n(Current Language: ${selectedLanguage})`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+    { type: 'bot', text: `Namaste! 🙏 Main hoon aapka **Chunav Sathi**. Chunav ke bare mein kuch bhi puchein — text ya voice mein!\n\nTo change language, tap the three dots icon (⋮) in the left sidebar and select your preferred language.\n\n(Current Language: ${selectedLanguage})`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
   ]);
   const [isTyping, setIsTyping] = useState(false);
 
@@ -384,7 +384,7 @@ export default function App() {
                       <span className="flex items-center text-whatsapp-green font-medium">
                         Interactive Journey <span className="online-indicator ml-1.5 bg-whatsapp-green"></span>
                       </span>
-                    ) : 'Interactive election guide'}
+                    ) : '📍 Powered by Google Maps'}
                   </div>
                 </div>
                 <div className="feature-header-actions">
@@ -406,7 +406,7 @@ export default function App() {
                   <>
                     <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 z-10">
                       <div className="text-center my-2">
-                        <span className="bg-[#1a2731] text-whatsapp-subtext text-[11px] px-3 py-1 rounded-full border border-whatsapp-border">Today</span>
+                        <span className="bg-[#1a2731] text-whatsapp-subtext text-[11px] px-3 py-1 rounded-full">Today</span>
                       </div>
                       {messages.map((m, i) => (
                         <div key={i} className={`msg ${m.type === 'bot' ? 'bot' : 'user'}`}>
@@ -596,7 +596,7 @@ export default function App() {
                       {lang}
                     </button>
                   ))}
-                  <span className="lang-chip bg-[#2e2a0d] border-[#f7c948] text-[#f7c948]">Desi Jugaad 😄</span>
+                  
                 </div>
               </div>
               <div className="mb-6">

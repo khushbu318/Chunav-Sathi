@@ -11,7 +11,6 @@ const languageMap: Record<string, string> = {
   'தமிழ்': 'ta-IN',
   'ગુજરાતી': 'gu-IN',
   'ಕನ್ನಡ': 'kn-IN',
-  'Desi Jugaad 😄': 'hi-IN'
 };
 
 interface VoiceCallProps {

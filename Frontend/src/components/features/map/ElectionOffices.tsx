@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Phone, ExternalLink, Loader, MapPin, Star, Clock, Navigation, ChevronDown, ChevronUp, AlertCircle, CheckCircle } from 'lucide-react';
-import { searchLocations, getPlaceDetails, getGoogleMapsUrl, getGoogleMapsDirectionsUrl, getStaticMapUrl, isGoogleMapsEnabled, type SearchResult } from './googlePlacesSearch';
+import { Search, Phone, ExternalLink, Loader, MapPin, Star, Clock, Navigation, AlertCircle, CheckCircle } from 'lucide-react';
+import { searchLocations, getGoogleMapsUrl, getGoogleMapsDirectionsUrl, getStaticMapUrl, type SearchResult } from './googlePlacesSearch';
 import './ElectionOffices.css';
 
 interface ElectionOfficesProps {
@@ -15,23 +15,20 @@ const ElectionOffices: React.FC<ElectionOfficesProps> = ({ searchQuery: initialQ
   const [hasSearched, setHasSearched] = useState(false);
   const [searchError, setSearchError] = useState<string>('');
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
-  const [placeDetails, setPlaceDetails] = useState<Record<string, SearchResult>>({});
-  const [loadingDetails, setLoadingDetails] = useState<Set<string>>(new Set());
 
   // Auto-search if initial query provided
   useEffect(() => {
     if (initialQuery.trim()) {
       handleSearch(initialQuery);
     }
-  }, []);
+  }, [initialQuery]);
 
-  const handleSearch = async (query: string, lat?: number, lng?: number) => {
+  async function handleSearch(query: string, lat?: number, lng?: number) {
     setSearchQuery(query);
     setHasSearched(true);
     setIsSearching(true);
     setSearchError('');
     setExpandedCard(null);
-    setPlaceDetails({});
 
     try {
       const searchResults = await searchLocations(query, lat, lng);
@@ -75,32 +72,6 @@ const ElectionOffices: React.FC<ElectionOfficesProps> = ({ searchQuery: initialQ
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleSearch(searchQuery);
-    }
-  };
-
-  const toggleCardExpansion = async (placeId: string) => {
-    if (expandedCard === placeId) {
-      setExpandedCard(null);
-      return;
-    }
-
-    setExpandedCard(placeId);
-
-    // Load place details if not already loaded
-    if (!placeDetails[placeId] && !loadingDetails.has(placeId)) {
-      setLoadingDetails(prev => new Set(prev).add(placeId));
-      try {
-        const details = await getPlaceDetails(placeId);
-        setPlaceDetails(prev => ({ ...prev, [placeId]: details }));
-      } catch (error) {
-        console.error('Failed to load place details:', error);
-      } finally {
-        setLoadingDetails(prev => {
-          const newSet = new Set(prev);
-          newSet.delete(placeId);
-          return newSet;
-        });
-      }
     }
   };
 
@@ -155,22 +126,6 @@ const ElectionOffices: React.FC<ElectionOfficesProps> = ({ searchQuery: initialQ
 
   return (
     <div className="election-offices-container">
-      {/* Header */}
-      <motion.div
-        className="eo-header"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="eo-header-content">
-          <h1 className="eo-header-title">📍 Find Election Offices & Polling Booths</h1>
-          <p className="eo-header-subtitle">Powered by Google Maps search</p>
-          <p className="eo-header-desc">
-            Search for polling booths, election offices, or voter registration centers by pincode, area, or city name.
-          </p>
-        </div>
-      </motion.div>
-
       {/* Search Box */}
       <motion.div
         className="eo-search-section"
@@ -178,16 +133,19 @@ const ElectionOffices: React.FC<ElectionOfficesProps> = ({ searchQuery: initialQ
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
       >
-        <div className="eo-search-wrapper">
-          <Search size={18} className="eo-search-icon" />
-          <input
-            type="text"
-            placeholder="Enter pincode, area, city, or state..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyPress={handleKeyPress}
-            className="eo-search-input"
-          />
+        <div className="eo-search-row">
+          <div className="eo-search-wrapper">
+            <Search size={18} className="eo-search-icon" />
+            <input
+              type="text"
+              placeholder="     Enter pincode, area, city, or state..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={handleKeyPress}
+              className="eo-search-input"
+            />
+          </div>
+
           <button
             onClick={() => handleSearch(searchQuery)}
             disabled={isSearching}
@@ -195,9 +153,7 @@ const ElectionOffices: React.FC<ElectionOfficesProps> = ({ searchQuery: initialQ
           >
             {isSearching ? 'Searching...' : 'Search'}
           </button>
-        </div>
 
-        <div className="eo-geolocation-wrapper">
           <button
             onClick={handleGeolocation}
             disabled={isSearching}
@@ -208,12 +164,6 @@ const ElectionOffices: React.FC<ElectionOfficesProps> = ({ searchQuery: initialQ
           </button>
         </div>
 
-
-        {!isGoogleMapsEnabled && (
-          <p className="eo-search-warning">
-            Google Maps API key not configured. Search will use a demo fallback dataset instead.
-          </p>
-        )}
         <p className="eo-helpline">
           <a href="https://www.eci.gov.in/" target="_blank" rel="noopener noreferrer" className="eo-link">
             ECI election help ↗
@@ -266,8 +216,6 @@ const ElectionOffices: React.FC<ElectionOfficesProps> = ({ searchQuery: initialQ
             <AnimatePresence>
               {results.map((location, index) => {
                 const isExpanded = expandedCard === location.place_id;
-                const details = placeDetails[location.place_id];
-                const isLoadingDetails = loadingDetails.has(location.place_id);
 
                 return (
                   <motion.div
@@ -326,63 +274,50 @@ const ElectionOffices: React.FC<ElectionOfficesProps> = ({ searchQuery: initialQ
                             exit={{ height: 0, opacity: 0 }}
                             transition={{ duration: 0.3 }}
                           >
-                            {isLoadingDetails ? (
-                              <div className="eo-details-loading">
-                                <Loader size={16} className="eo-loader-small" />
-                                Loading details...
-                              </div>
-                            ) : details ? (
-                              <div className="eo-details-content">
-                                {/* Static Map */}
+                            <div className="eo-details-content">
+                              {getStaticMapUrl(location) && (
                                 <div className="eo-static-map">
                                   <img
-                                    src={getStaticMapUrl(details)}
-                                    alt={`Map of ${details.name}`}
+                                    src={getStaticMapUrl(location)}
+                                    alt={`Map of ${location.name}`}
                                     loading="lazy"
                                   />
                                 </div>
+                              )}
 
-                                {/* Contact Info */}
-                                {details.phone && (
-                                  <div className="eo-detail-item">
-                                    <Phone size={14} />
-                                    <a href={`tel:${details.phone}`} className="eo-phone-link">
-                                      {details.phone}
-                                    </a>
+                              {location.phone && (
+                                <div className="eo-detail-item">
+                                  <Phone size={14} />
+                                  <a href={`tel:${location.phone}`} className="eo-phone-link">
+                                    {location.phone}
+                                  </a>
+                                </div>
+                              )}
+
+                              {location.hours && location.hours.length > 0 && (
+                                <div className="eo-detail-item">
+                                  <Clock size={14} />
+                                  <div className="eo-hours">
+                                    <div className="eo-hours-title">Hours:</div>
+                                    {location.hours.slice(0, 3).map((hour, idx) => (
+                                      <div key={idx} className="eo-hour-item">{hour}</div>
+                                    ))}
                                   </div>
-                                )}
+                                </div>
+                              )}
 
-                                {/* Hours */}
-                                {details.hours && details.hours.length > 0 && (
-                                  <div className="eo-detail-item">
-                                    <Clock size={14} />
-                                    <div className="eo-hours">
-                                      <div className="eo-hours-title">Hours:</div>
-                                      {details.hours.slice(0, 3).map((hour, idx) => (
-                                        <div key={idx} className="eo-hour-item">{hour}</div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-
-                                {/* Directions Button */}
-                                <motion.a
-                                  href={getGoogleMapsDirectionsUrl(details)}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="eo-directions-btn"
-                                  whileHover={{ scale: 1.02 }}
-                                  whileTap={{ scale: 0.98 }}
-                                >
-                                  <Navigation size={16} />
-                                  Get Directions
-                                </motion.a>
-                              </div>
-                            ) : (
-                              <div className="eo-details-error">
-                                Failed to load additional details
-                              </div>
-                            )}
+                              <motion.a
+                                href={getGoogleMapsDirectionsUrl(location)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="eo-directions-btn"
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                              >
+                                <Navigation size={16} />
+                                Get Directions
+                              </motion.a>
+                            </div>
                           </motion.div>
                         )}
                       </AnimatePresence>
@@ -390,15 +325,7 @@ const ElectionOffices: React.FC<ElectionOfficesProps> = ({ searchQuery: initialQ
 
                     {/* Action Buttons */}
                     <div className="eo-action-buttons">
-                      <motion.button
-                        onClick={() => toggleCardExpansion(location.place_id)}
-                        className="eo-expand-btn"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        title={isExpanded ? "Collapse details" : "View details"}
-                      >
-                        {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                      </motion.button>
+                     
 
                       <motion.a
                         href={getGoogleMapsUrl(location)}
