@@ -23,6 +23,7 @@ body {
 }
 
 .app { display: flex; height: 100vh; overflow: hidden; }
+.mobile-hidden { display: none !important; }
 
 /* ── FAR LEFT RAIL ── */
 .sidebar-rail { width: 52px; min-width: 52px; background: #111b21; border-right: 0.5px solid #2a3942; display: flex; flex-direction: column; align-items: center; padding: 10px 0; gap: 4px; }
@@ -887,25 +888,156 @@ body {
 
 /* ── RESPONSIVE ADJUSTMENTS ── */
 @media (max-width: 768px) {
-  .step-title {
-    font-size: 1.5rem;
+  .app {
+    flex-direction: column;
+    height: 100vh;
   }
-  
-  .info-card {
-    padding: 16px;
+  .sidebar-rail {
+    width: 100%;
+    min-width: auto;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-right: none;
+    border-top: 0.5px solid #2a3942;
+    background: #111b21;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 30;
   }
-  
-  .point-item {
+  .sidebar-rail .rail-divider,
+  .sidebar-rail .rail-spacer {
+    display: none;
+  }
+  .sidebar-rail .rail-btn {
+    width: 44px;
+    height: 44px;
+  }
+  .left-panel,
+  .right-panel {
+    width: 100%;
+    min-width: auto;
+    border-right: none;
+    padding-bottom: 63px;
+  }
+  .left-panel {
+    border-bottom: 0.5px solid #2a3942;
+  }
+  .right-bg {
+    display: none;
+  }
+  .mobile-hidden {
+    display: none !important;
+  }
+  .left-header {
+    padding: 12px 16px;
+  }
+  .left-header-title {
+    font-size: 17px;
+  }
+  .search-bar {
     padding: 10px 12px;
   }
-  
-  .nav-button {
-    padding: 12px 20px;
-    font-size: 14px;
+  .chat-list {
+    width: 100%;
   }
-  
+  .chat-item {
+    padding: 12px 14px;
+  }
+  .feature-header {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  .feature-body {
+    padding: 14px;
+  }
+  .feature-header-actions {
+    gap: 6px;
+  }
+  .feature-title {
+    font-size: 15px;
+  }
+  .feature-sub {
+    font-size: 11px;
+  }
+  .feature-panel {
+    min-height: calc(100vh - 104px);
+  }
+  .msg {
+    max-width: 100%;
+  }
+  .msg-bubble {
+    max-width: 100%;
+    width: auto;
+  }
+  .chat-input-bar {
+    padding: 12px 12px 14px;
+  }
+  .chat-text-input {
+    min-width: 0;
+  }
+  .nav-button {
+    padding: 10px 12px;
+    font-size: 13px;
+    gap: 6px;
+  }
+  .nav-button-prev,
+  .nav-button-next {
+    min-width: 60px;
+  }
+  .progress-indicator {
+    width: 8px !important;
+    height: 8px !important;
+  }
   .visual-area {
-    min-height: 300px;
+    min-height: 240px;
+    padding: 10px;
+  }
+  .visual-container {
+    max-width: 100%;
+    gap: 12px;
+    padding: 0;
+  }
+  .journey-icon-wrapper {
+    max-width: 100%;
+  }
+  .info-card {
+    padding: 14px;
+    max-height: 220px;
+  }
+  .point-item {
+    gap: 10px;
+    padding: 9px 10px;
+  }
+  .point-icon {
+    width: 24px;
+    height: 24px;
+  }
+  .point-text {
+    font-size: 13px;
+  }
+  .step-title {
+    font-size: 1.3rem;
+  }
+  .step-description {
+    font-size: 13px;
+  }
+  .evm-inner {
+    padding: 14px;
+  }
+  .evm-display {
+    font-size: 11px;
+  }
+  .stage-evm-button {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  .call-overlay,
+  .story-viewer,
+  .settings-overlay {
+    padding: 20px;
   }
 }
 .tl-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-top: 4px; }

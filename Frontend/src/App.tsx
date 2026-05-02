@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -16,6 +16,7 @@ import {
   MapPin,
   Calendar,
   BookOpen,
+  ChevronLeft,
   ChevronRight
 } from 'lucide-react';
 import VoterJourney from './components/VoterJourney';
@@ -145,6 +146,33 @@ export default function App() {
   const [isCalling, setIsCalling] = useState(false);
   const [chatInput, setChatInput] = useState('');
   const [searchInput, setSearchInput] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
+  const [mobileViewMode, setMobileViewMode] = useState<'list' | 'detail'>('list');
+
+  useEffect(() => {
+    const updateMobile = () => setIsMobile(window.innerWidth <= 768);
+    updateMobile();
+    window.addEventListener('resize', updateMobile);
+    return () => window.removeEventListener('resize', updateMobile);
+  }, []);
+
+  useEffect(() => {
+    if (isMobile) {
+      window.history.replaceState({ mobileViewMode: 'list' }, '');
+    } else {
+      setMobileViewMode('list');
+    }
+  }, [isMobile]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      if (isMobile) {
+        setMobileViewMode('list');
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [isMobile]);
   const [messages, setMessages] = useState([
     { type: 'bot', text: `Namaste! 🙏 Main hoon aapka **Chunav Sathi**. Chunav ke bare mein kuch bhi puchein — text ya voice mein!\n\nTo change language, tap the three dots icon (⋮) in the left sidebar and select your preferred language.\n\n(Current Language: ${selectedLanguage})`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
   ]);
@@ -249,13 +277,21 @@ export default function App() {
       setActiveTab('status');
       setActiveStory(matchedFeature);
     } else {
-      setActivePanel('chat');
+      selectFeature('chat');
       handleSend(searchInput);
     }
     setSearchInput('');
   };
 
   const [activeStory, setActiveStory] = useState<string | null>(null);
+
+  const selectFeature = (id: string) => {
+    setActivePanel(id);
+    if (isMobile) {
+      setMobileViewMode('detail');
+      window.history.pushState({ mobileViewMode: 'detail', panel: id }, '');
+    }
+  };
 
   return (
     <div className="app">
@@ -267,7 +303,7 @@ export default function App() {
       />
 
       {/* Left Panel */}
-      <div className="left-panel">
+      <div className={`left-panel ${isMobile && mobileViewMode === 'detail' ? 'mobile-hidden' : ''}`}>
         <div className="left-header">
           <span className="left-header-title">{activeTab === 'chats' ? 'Chunav Sathi' : 'FAQ'}</span>
           <div className="flex gap-1">
@@ -297,7 +333,7 @@ export default function App() {
                   key={f.id}
                   {...f}
                   active={activePanel === f.id}
-                  onClick={setActivePanel}
+                  onClick={selectFeature}
                   tabType="chats"
                 />
               ))}
@@ -344,7 +380,7 @@ export default function App() {
       </div>
 
       {/* Right Panel */}
-      <div className="right-panel">
+      <div className={`right-panel ${isMobile && mobileViewMode === 'list' ? 'mobile-hidden' : ''}`}>
         <div className="right-bg"></div>
 
         <AnimatePresence mode="wait">
@@ -356,7 +392,7 @@ export default function App() {
               exit={{ opacity: 0 }}
               className="h-full"
             >
-              <HomePanel onQuickAccess={setActivePanel} />
+              <HomePanel onQuickAccess={selectFeature} />
             </motion.div>
           ) : (
             <motion.div
@@ -364,9 +400,14 @@ export default function App() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="feature-panel"
+              className="feature-panel min-h-0"
             >
               <div className="feature-header">
+                {isMobile && mobileViewMode === 'detail' && (
+                  <button className="icon-btn mobile-back-btn" onClick={() => window.history.back()}>
+                    <ChevronLeft size={18} />
+                  </button>
+                )}
                 <div className={`avatar w-9 h-9 text-base`} style={{ background: features.find(f => f.id === activePanel)?.colorClass }}>
                   {(() => {
                     const Icon = features.find(f => f.id === activePanel)?.icon;
@@ -396,7 +437,14 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="feature-body flex flex-col h-full overflow-hidden relative bg-[#0b141a]" style={{ flex: 1, overflowY: 'auto', padding: 0 }}>
+              <div
+                className="feature-body flex min-h-0 flex-col h-full overflow-hidden relative bg-[#0b141a]"
+                style={{
+                  flex: 1,
+                  overflowY: activePanel === 'journey' ? 'hidden' : 'auto',
+                  padding: 0,
+                }}
+              >
                 {/* WhatsApp Chat Background Pattern */}
                 {activePanel === 'chat' && (
                   <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.08]" style={{ backgroundImage: "url('https://static.whatsapp.net/rsrc.php/v3/yl/r/r2-1AIf_a8g.png')", backgroundRepeat: 'repeat', backgroundSize: '400px' }} />

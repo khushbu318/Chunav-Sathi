@@ -96,9 +96,9 @@ export default function VoterJourney() {
   };
 
   return (
-    <div className="w-full h-full bg-[#111b21] flex flex-col overflow-hidden voter-journey-container">
+    <div className="w-full h-full min-h-0 bg-[#111b21] flex flex-col overflow-hidden voter-journey-container">
       {/* Animated Visual Area */}
-      <div className="flex-1 relative flex items-center justify-center p-4 overflow-hidden visual-area">
+      <div className="flex-1 min-h-0 relative flex flex-col items-stretch justify-start p-4 overflow-y-auto overflow-x-hidden visual-area">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentStep}
@@ -106,7 +106,7 @@ export default function VoterJourney() {
             animate={{ opacity: 1, scale: 1, x: 0 }}
             exit={{ opacity: 0, scale: 1.1, x: -50 }}
             transition={{ type: "spring", damping: 20, stiffness: 100 }}
-            className="w-full max-w-md flex flex-col items-center justify-center gap-4 visual-container"
+            className="w-full max-w-md min-h-full mx-auto flex flex-col items-center justify-center gap-4 visual-container"
           >
             {/* Visual Representation */}
             <div className="relative w-34 h-34 flex items-center justify-center w-full">
@@ -308,7 +308,7 @@ export default function VoterJourney() {
       </div>
 
       {/* Navigation Footer */}
-      <div className="bg-[#202c33]/95 backdrop-blur-2xl border-t border-whatsapp-border/50 p-6 flex justify-center">
+      <div className="shrink-0 bg-[#202c33]/95 backdrop-blur-2xl border-t border-whatsapp-border/50 p-6 flex justify-center">
         <div className="flex items-center gap-8 w-full max-w-2xl justify-center relative">
           <button
             onClick={handlePrev}
