@@ -9,6 +9,7 @@ COPY Frontend/tsconfig*.json ./
 COPY Frontend/vite.config.ts ./
 COPY Frontend/postcss.config.js ./
 COPY Frontend/tailwind.config.js ./
+COPY Frontend/index.html ./
 COPY Frontend/public ./public
 COPY Frontend/src ./src
 
