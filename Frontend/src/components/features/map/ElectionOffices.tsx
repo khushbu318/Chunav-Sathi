@@ -37,7 +37,7 @@ const ElectionOffices: React.FC<ElectionOfficesProps> = ({ searchQuery: initialQ
       const searchResults = await searchLocations(query, lat, lng);
       setResults(searchResults);
       if (searchResults.length === 0) {
-        setSearchError('No election locations found for that query. Try a different area or pincode.');
+        setSearchError('No verified election offices or polling booths were found for that search. Try a nearby area, district, or pincode.');
       }
     } catch (error) {
       setSearchError('Unable to search locations right now. Please try again later.');
@@ -208,9 +208,7 @@ const ElectionOffices: React.FC<ElectionOfficesProps> = ({ searchQuery: initialQ
           </button>
         </div>
 
-        <p className="eo-search-hint">
-          Try searching: "Noida", "201301", "Sector 21", "Delhi", "Bangalore", etc.
-        </p>
+
         {!isGoogleMapsEnabled && (
           <p className="eo-search-warning">
             Google Maps API key not configured. Search will use a demo fallback dataset instead.
@@ -218,7 +216,7 @@ const ElectionOffices: React.FC<ElectionOfficesProps> = ({ searchQuery: initialQ
         )}
         <p className="eo-helpline">
           <a href="https://www.eci.gov.in/" target="_blank" rel="noopener noreferrer" className="eo-link">
-            ECI Electoral Search ↗
+            ECI election help ↗
           </a>
           {' or call Voter Helpline: '}
           <strong>1950</strong>
@@ -256,7 +254,7 @@ const ElectionOffices: React.FC<ElectionOfficesProps> = ({ searchQuery: initialQ
           <div className="eo-empty-state">
             <div className="eo-empty-icon">❌</div>
             <h2 className="eo-empty-title">No Results Found</h2>
-            <p className="eo-empty-text">Try searching with a different location or check the spelling</p>
+            <p className="eo-empty-text">No verified Google Maps results were found. Try a nearby area, district, city, or pincode.</p>
           </div>
         ) : (
           <div className="eo-results-container">

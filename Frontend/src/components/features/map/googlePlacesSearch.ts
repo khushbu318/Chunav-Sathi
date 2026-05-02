@@ -75,7 +75,7 @@ export const searchLocations = async (query: string, lat?: number, lng?: number)
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/constituency/search`, {
+    const response = await fetch(`${API_BASE_URL}/api/election-offices/search`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ export const searchLocations = async (query: string, lat?: number, lng?: number)
 };
 
 export const getPlaceDetails = async (placeId: string): Promise<SearchResult> => {
-  const response = await fetch(`${API_BASE_URL}/api/constituency/details/${placeId}`);
+  const response = await fetch(`${API_BASE_URL}/api/election-offices/details/${placeId}`);
   const data = await response.json();
 
   if (!response.ok) {

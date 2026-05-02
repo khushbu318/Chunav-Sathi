@@ -1,11 +1,9 @@
 /**
- * Official 2026 Indian Election Timeline Data
- * Complete schedule from election announcements through results and beyond
- * 
- * References:
- * - Election Commission of India (eci.gov.in)
- * - Representation of the People Act, 1950/1951
- * - Historical election schedules from 2024 cycle
+ * Reference election timeline data used for the UI.
+ *
+ * These dates are bundled with the app and are not fetched live from ECI.
+ * Users should verify critical timelines on official ECI or State Election
+ * Commission websites before relying on them.
  */
 
 export interface TimelineEvent {
@@ -397,4 +395,11 @@ export function getEventStatus(dateString: string): 'completed' | 'ongoing' | 'u
   if (daysRemaining < 0) return 'completed';
   if (daysRemaining === 0) return 'ongoing';
   return 'upcoming';
+}
+
+export function getTimelineEvents(): TimelineEvent[] {
+  return electionTimelineData.map((event) => ({
+    ...event,
+    status: getEventStatus(event.date),
+  }));
 }

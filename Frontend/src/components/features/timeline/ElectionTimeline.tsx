@@ -2,17 +2,9 @@ import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ExternalLink } from 'lucide-react';
 import type { TimelineEvent } from './timeline-data';
-import {
-  electionTimelineData,
-} from './timeline-data';
+import { getTimelineEvents } from './timeline-data';
 import './ElectionTimeline.css';
 
-/**
- * ═══════════════════════════════════════════════════════════════════
- * HEADER COMPONENT
- * Displays timeline title and description
- * ═══════════════════════════════════════════════════════════════════
- */
 const TimelineHeader: React.FC = () => {
   return (
     <motion.div
@@ -21,22 +13,14 @@ const TimelineHeader: React.FC = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <h1 className="timeline-header-title">📅 Election Timeline & Key Dates</h1>
+      <h1 className="timeline-header-title">Election Timeline & Key Dates</h1>
       <p className="timeline-header-subtitle">
-        Important deadlines and dates for upcoming elections, registration cutoffs, and voting days
+        Reference dates and milestones for election awareness. Verify important deadlines on official ECI websites.
       </p>
     </motion.div>
   );
 };
 
-
-
-/**
- * ═══════════════════════════════════════════════════════════════════
- * TIMELINE ITEM COMPONENT
- * Individual event with expandable details
- * ═══════════════════════════════════════════════════════════════════
- */
 interface TimelineItemComponentProps {
   event: TimelineEvent;
   isExpanded: boolean;
@@ -46,14 +30,14 @@ interface TimelineItemComponentProps {
 const TimelineItemComponent: React.FC<TimelineItemComponentProps> = ({
   event,
   isExpanded,
-  onToggleExpand
+  onToggleExpand,
 }) => {
   const date = new Date(event.date + 'T00:00:00');
-  const dateDisplay = date.toLocaleDateString('en-IN', { 
-    weekday: 'short', 
-    year: 'numeric', 
-    month: 'short', 
-    day: 'numeric' 
+  const dateDisplay = date.toLocaleDateString('en-IN', {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
   });
 
   return (
@@ -65,47 +49,47 @@ const TimelineItemComponent: React.FC<TimelineItemComponentProps> = ({
       role="listitem"
       aria-expanded={isExpanded}
     >
-      {/* Timeline dot marker */}
-      <div className="timeline-dot" aria-hidden="true">
-        {/* {event.status === 'completed' ? '✓' : event.status === 'ongoing' ? '●' : '○'} */}
-      </div>
+      <div className="timeline-dot" aria-hidden="true" />
 
-      {/* Main content */}
       <div className="timeline-item-header">
         <div className="timeline-icon" role="img" aria-label={event.title}>
           {event.icon}
         </div>
         <div className="timeline-item-meta">
           <div className="timeline-date">
-            {dateDisplay}<br />
+            {dateDisplay}
+            <br />
             {event.timelineLabel && (
               <span className="ml-2 text-indigo-400 font-semibold">{event.timelineLabel}</span>
             )}
           </div>
           <h3 className="timeline-title">{event.title}</h3>
           <p className="timeline-description">{event.description}</p>
-          {/* <span className={`timeline-status ${event.status}`}>
-            {event.status === 'completed' ? 'Completed' : event.status === 'ongoing' ? 'Ongoing' : 'Upcoming'}
-          </span> */}
         </div>
       </div>
 
-      {/* Expandable details */}
       <AnimatePresence>
         <div className="timeline-item-expandable">
           <div className="timeline-details">
             <p>{event.details}</p>
             {(event.importance === 'critical' || event.importance === 'high') && (
-              <div style={{ marginTop: '0.75rem', padding: '0.75rem', background: 'rgba(255, 111, 0, 0.1)', borderRadius: '6px', borderLeft: '3px solid rgb(255, 111, 0)' }}>
-                <strong style={{ color: 'rgb(255, 111, 0)' }}>⚠️ Important Event</strong>
+              <div
+                style={{
+                  marginTop: '0.75rem',
+                  padding: '0.75rem',
+                  background: 'rgba(255, 111, 0, 0.1)',
+                  borderRadius: '6px',
+                  borderLeft: '3px solid rgb(255, 111, 0)',
+                }}
+              >
+                <strong style={{ color: 'rgb(255, 111, 0)' }}>Important event</strong>
               </div>
             )}
           </div>
 
-          {/* Sources section */}
           {event.sources.length > 0 && (
             <div className="timeline-sources">
-              <span className="timeline-sources-title">📚 Official Sources:</span>
+              <span className="timeline-sources-title">Source Links</span>
               <div className="flex flex-wrap gap-2">
                 {event.sources.map((source, idx) => (
                   <a
@@ -126,7 +110,6 @@ const TimelineItemComponent: React.FC<TimelineItemComponentProps> = ({
         </div>
       </AnimatePresence>
 
-      {/* Expand/collapse button */}
       <button
         className="timeline-expand-btn"
         onClick={() => onToggleExpand(event.id)}
@@ -139,29 +122,23 @@ const TimelineItemComponent: React.FC<TimelineItemComponentProps> = ({
   );
 };
 
-
-
-/**
- * ═══════════════════════════════════════════════════════════════════
- * MAIN ELECTION TIMELINE COMPONENT
- * ═══════════════════════════════════════════════════════════════════
- */
 interface ElectionTimelineProps {
   onEventSelect?: (event: TimelineEvent) => void;
 }
 
 const ElectionTimeline: React.FC<ElectionTimelineProps> = () => {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const timelineEvents = getTimelineEvents();
 
   const handleToggleExpand = useCallback((id: string) => {
-    setExpandedIds(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
       } else {
-        newSet.add(id);
+        next.add(id);
       }
-      return newSet;
+      return next;
     });
   }, []);
 
@@ -174,13 +151,10 @@ const ElectionTimeline: React.FC<ElectionTimelineProps> = () => {
       role="main"
       aria-label="Election Timeline"
     >
-      {/* Header */}
       <TimelineHeader />
 
-      {/* Content area */}
       <div className="timeline-content">
-        {/* Timeline items */}
-        {electionTimelineData.length > 0 ? (
+        {timelineEvents.length > 0 ? (
           <motion.div
             className="timeline-scroll-container"
             initial={{ opacity: 0, y: 20 }}
@@ -189,7 +163,7 @@ const ElectionTimeline: React.FC<ElectionTimelineProps> = () => {
           >
             <div className="timeline-items" role="list">
               <AnimatePresence mode="wait">
-                {electionTimelineData.map(event => (
+                {timelineEvents.map((event) => (
                   <TimelineItemComponent
                     key={event.id}
                     event={event}
@@ -206,23 +180,22 @@ const ElectionTimeline: React.FC<ElectionTimelineProps> = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <div className="timeline-empty-icon">📭</div>
+            <div className="timeline-empty-icon">No data</div>
             <div className="timeline-empty-title">No events found</div>
             <div className="timeline-empty-desc">
-              Check back later for upcoming election dates
+              Check back later for updated timeline information.
             </div>
           </motion.div>
         )}
       </div>
 
-      {/* Footer note */}
       <motion.div
         className="timeline-footer"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
       >
-        📋 All dates based on ECI official schedule • Last updated today
+        Reference timeline only. Please confirm critical dates on ECI or your State Election Commission website.
       </motion.div>
     </motion.div>
   );

@@ -88,6 +88,39 @@ function extractGeminiText(response) {
   return parts.map((part) => part.text || '').join('');
 }
 
+function buildFallbackElectionResponse(message, language = 'English', isVoice = false) {
+  const normalized = String(message || '').trim().toLowerCase();
+  const isHindi = language === 'हिंदी';
+
+  if (isHindi) {
+    if (!normalized || ['hi', 'hello', 'namaste', 'नमस्ते'].includes(normalized)) {
+      return 'नमस्ते! मैं चुनाव साथी हूँ। मैं वोटर आईडी, मतदान प्रक्रिया, ज़रूरी दस्तावेज़, चुनाव तिथियों और मतदान केंद्र की जानकारी में मदद कर सकता हूँ।';
+    }
+    if (normalized.includes('voter') || normalized.includes('id') || normalized.includes('मतदाता')) {
+      return isVoice
+        ? 'वोटर आईडी के लिए voters.eci.gov.in पर फॉर्म 6 भरें और दस्तावेज़ अपलोड करें।'
+        : 'वोटर आईडी बनाने के लिए voters.eci.gov.in पर जाएँ, Form 6 भरें, और फोटो व पहचान दस्तावेज़ अपलोड करें।';
+    }
+    if (normalized.includes('booth') || normalized.includes('polling') || normalized.includes('मतदान')) {
+      return 'अपने मतदान केंद्र की जानकारी के लिए ऐप के चुनाव कार्यालय और पोलिंग बूथ खोज फीचर का उपयोग करें या आधिकारिक ECI वेबसाइट देखें।';
+    }
+    return 'मैं चुनाव से जुड़ी जानकारी में मदद कर सकता हूँ, जैसे वोटर आईडी, मतदान केंद्र, चुनाव प्रक्रिया, दस्तावेज़ और महत्वपूर्ण तिथियाँ।';
+  }
+
+  if (!normalized || ['hi', 'hello', 'hey', 'namaste'].includes(normalized)) {
+    return 'Hello! I am Chunav Sathi. I can help with voter ID steps, election process, key dates, required documents, and polling booth information.';
+  }
+  if (normalized.includes('voter') || normalized.includes('id')) {
+    return isVoice
+      ? 'To apply for a voter ID, visit voters.eci.gov.in and fill Form 6.'
+      : 'To apply for a voter ID, visit voters.eci.gov.in, fill Form 6, and upload your photo and identity documents.';
+  }
+  if (normalized.includes('booth') || normalized.includes('polling')) {
+    return 'To find your polling booth, use the election offices and polling booth finder in the app or verify it on the official ECI website.';
+  }
+  return 'I can help with election topics such as voter ID registration, polling booths, election timelines, voting steps, and required documents.';
+}
+
 app.post('/api/chat', async (req, res) => {
   const { message, language = 'English', isVoice = false } = req.body;
 
@@ -105,12 +138,13 @@ ${isVoice ? 'The user is speaking via voice. Keep your response very concise, co
     const result = await generateGeminiContent(message, systemInstruction);
     const responseText = extractGeminiText(result);
 
-    res.json({ text: responseText });
+    res.json({ text: responseText || buildFallbackElectionResponse(message, language, isVoice), fallback: !responseText });
   } catch (error) {
     console.error('Gemini API Error:', error.message);
-    res.status(500).json({ 
-      error: 'Failed to reach Gemini API',
-      details: error.message
+    res.json({
+      text: buildFallbackElectionResponse(message, language, isVoice),
+      fallback: true,
+      warning: 'Gemini API unavailable, served fallback response.',
     });
   }
 });
@@ -162,7 +196,7 @@ const getPlaceDetails = async (placeId) => {
   return data.result;
 };
 
-app.post('/api/constituency/search', async (req, res) => {
+app.post('/api/election-offices/search', async (req, res) => {
   const { query, lat, lng } = req.body;
 
   if (!GOOGLE_PLACES_API_KEY) {
@@ -253,55 +287,20 @@ app.post('/api/constituency/search', async (req, res) => {
     // Sort by distance
     searchResults.sort((a, b) => a.distance_km - b.distance_km);
 
-    // If no results found, return mock data for demonstration
-    if (searchResults.length === 0) {
-      console.log('No real results found, returning mock data for demonstration');
-      const mockResults = [
-        {
-          place_id: 'mock_1',
-          name: 'District Election Office - Central Delhi',
-          address: 'Old Secretariat Building, Rajpur Road, Civil Lines, Delhi',
-          lat: searchLat + 0.01,
-          lng: searchLng + 0.01,
-          distance_km: 1.2,
-          open_now: true,
-          rating: 4.2,
-          type: 'election_office'
-        },
-        {
-          place_id: 'mock_2',
-          name: 'Electoral Registration Officer Office',
-          address: 'Election Commission of India, Nirvachan Sadan, Delhi',
-          lat: searchLat - 0.005,
-          lng: searchLng - 0.005,
-          distance_km: 0.8,
-          open_now: false,
-          rating: 3.8,
-          type: 'election_office'
-        },
-        {
-          place_id: 'mock_3',
-          name: 'Polling Booth No. 123 - Connaught Place',
-          address: 'Community Center, Connaught Place, New Delhi',
-          lat: searchLat + 0.008,
-          lng: searchLng + 0.008,
-          distance_km: 1.5,
-          open_now: null,
-          rating: null,
-          type: 'polling_booth'
-        }
-      ];
-      res.json({ results: mockResults, searchLocation: { lat: searchLat, lng: searchLng } });
-    } else {
-      res.json({ results: searchResults, searchLocation: { lat: searchLat, lng: searchLng } });
-    }
+    // Return only real Google-backed results. Empty means no verified match was found.
+    res.json({
+      results: searchResults,
+      searchLocation: { lat: searchLat, lng: searchLng },
+      source: 'google_places',
+      fallbackUsed: false
+    });
   } catch (error) {
     console.error('Search error:', error);
     res.status(500).json({ error: error.message || 'Search failed' });
   }
 });
 
-app.get('/api/constituency/details/:placeId', async (req, res) => {
+app.get('/api/election-offices/details/:placeId', async (req, res) => {
   const { placeId } = req.params;
 
   if (!GOOGLE_PLACES_API_KEY) {
@@ -332,6 +331,16 @@ app.get('/api/constituency/details/:placeId', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`Chunav Sathi API running on port ${PORT}`);
-});
+
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Chunav Sathi API running on port ${PORT}`);
+  });
+}
+
+module.exports = {
+  app,
+  buildFallbackElectionResponse,
+  extractGeminiText,
+  haversineDistance,
+};

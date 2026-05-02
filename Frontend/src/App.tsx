@@ -213,13 +213,17 @@ export default function App() {
     setIsTyping(true);
 
     try {
-      const res = await fetch('http://localhost:3001/api/chat', {
+      const res = await fetch('http://127.0.0.1:8000/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: userMsg, language: selectedLanguage })
       });
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Chat API error: ${res.status} ${errorText}`);
+      }
       const data = await res.json();
-      setMessages(prev => [...prev, { type: 'bot', text: data.text, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
+      setMessages(prev => [...prev, { type: 'bot', text: data.response, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
     } catch (err) {
       setMessages(prev => [...prev, { type: 'bot', text: 'Failed to connect to Chunav Sathi AI. Please make sure the backend is running.', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
     } finally {

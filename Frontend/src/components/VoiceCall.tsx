@@ -30,6 +30,7 @@ export function VoiceCall({ onClose, selectedLanguage }: VoiceCallProps) {
     { type: 'bot', text: 'Namaste! I am Chunav Sathi. How can I help you with elections today?' }
   ]);
   const [timer, setTimer] = useState(0);
+  const [chatHistory, setChatHistory] = useState<any[]>([]);
   
   const recognitionRef = useRef<any>(null);
   const synthesisRef = useRef<SpeechSynthesis>(window.speechSynthesis);
@@ -110,34 +111,59 @@ export function VoiceCall({ onClose, selectedLanguage }: VoiceCallProps) {
 
   const handleBotResponse = async (userText: string) => {
     try {
-      const res = await fetch('http://localhost:3001/api/chat', {
+      // Call the backend API with chat history
+      const res = await fetch('http://localhost:8000/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userText, language: selectedLanguage, isVoice: true })
+        body: JSON.stringify({ 
+          message: userText, 
+          history: chatHistory
+        })
       });
+
+      if (!res.ok) {
+        throw new Error('Backend error');
+      }
+
       const data = await res.json();
+      const botResponse = data.response;
+
+      // Update chat history with user and bot messages
+      const updatedHistory = [
+        ...chatHistory,
+        { role: 'user', content: userText },
+        { role: 'model', content: botResponse }
+      ];
+      setChatHistory(updatedHistory);
+
+      // Update transcript display
+      setTranscript(prev => [...prev, { type: 'bot', text: botResponse }]);
       
-      setTranscript(prev => {
-        const newTrans = [...prev, { type: 'bot' as const, text: data.text }];
-        // Keep only last 3 lines to avoid clutter
-        return newTrans.slice(-3);
-      });
-      
-      speakResponse(data.text);
+      setCallState('speaking');
+      speakResponse(botResponse);
     } catch (err) {
-      const errText = 'Failed to connect to the backend.';
+      console.error('Error:', err);
+      const errText = 'Sorry, I could not connect to the backend. Please try again.';
       setTranscript(prev => [...prev, { type: 'bot', text: errText }]);
+      setCallState('speaking');
       speakResponse(errText);
     }
   };
 
   const speakResponse = (text: string) => {
-    setCallState('speaking');
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = languageMap[selectedLanguage] || 'en-IN';
     
     utterance.onend = () => {
       // After speaking, go back to listening
+      setCallState('listening');
+      try {
+        recognitionRef.current?.start();
+      } catch (e) {}
+    };
+
+    utterance.onerror = () => {
+      // If speech synthesis fails, still go back to listening
       setCallState('listening');
       try {
         recognitionRef.current?.start();

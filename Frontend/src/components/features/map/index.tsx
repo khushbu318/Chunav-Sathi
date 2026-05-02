@@ -3,17 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Search } from 'lucide-react';
 import ElectionOffices from './ElectionOffices';
 
-/**
- * Election Offices & Polling Booths Finder
- * 
- * Simple, WhatsApp-styled interface for finding:
- * - Polling booths
- * - Election offices
- * - Voter registration centers
- * 
- * User provides: pincode, area, and city
- * Powered by Google Maps
- */
 export default function FindElectionOffices() {
   const [showMap, setShowMap] = useState(false);
   const [searchInput, setSearchInput] = useState('');
@@ -43,7 +32,6 @@ export default function FindElectionOffices() {
             className="w-full h-full flex flex-col items-center justify-center p-6"
           >
             <div className="max-w-md w-full space-y-8">
-              {/* Header */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -57,18 +45,16 @@ export default function FindElectionOffices() {
                   Find Election Offices
                 </h1>
                 <p className="text-whatsapp-subtext">
-                  Locate polling booths & election offices near you
+                  Locate polling booths and election offices near you
                 </p>
               </motion.div>
 
-              {/* Input Section */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
                 className="space-y-4"
               >
-                {/* Search Input */}
                 <div className="relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-whatsapp-subtext">
                     <Search size={20} />
@@ -83,7 +69,6 @@ export default function FindElectionOffices() {
                   />
                 </div>
 
-                {/* Search Button */}
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -95,7 +80,6 @@ export default function FindElectionOffices() {
                 </motion.button>
               </motion.div>
 
-              {/* Info Cards */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -103,29 +87,28 @@ export default function FindElectionOffices() {
                 className="space-y-3 pt-6 border-t border-whatsapp-border"
               >
                 <div className="flex items-start gap-3">
-                  <span className="text-xl">🗳</span>
+                  <span className="text-xl">Polling</span>
                   <div>
                     <p className="font-medium text-whatsapp-text text-sm">Polling Booths</p>
-                    <p className="text-whatsapp-subtext text-xs">Where you'll vote</p>
+                    <p className="text-whatsapp-subtext text-xs">Where you will vote</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="text-xl">🏛</span>
+                  <span className="text-xl">Office</span>
                   <div>
                     <p className="font-medium text-whatsapp-text text-sm">Election Offices</p>
-                    <p className="text-whatsapp-subtext text-xs">Official election headquarters</p>
+                    <p className="text-whatsapp-subtext text-xs">Official election offices near you</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="text-xl">📋</span>
+                  <span className="text-xl">Help</span>
                   <div>
                     <p className="font-medium text-whatsapp-text text-sm">Voter Registration</p>
-                    <p className="text-whatsapp-subtext text-xs">Register to vote</p>
+                    <p className="text-whatsapp-subtext text-xs">Get help with registration services</p>
                   </div>
                 </div>
               </motion.div>
 
-              {/* Helpline */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -135,7 +118,7 @@ export default function FindElectionOffices() {
                 <p>Need help? Call Voter Helpline: <strong className="text-whatsapp-text">1950</strong></p>
                 <p className="mt-2">
                   <a href="https://www.eci.gov.in/" target="_blank" rel="noopener noreferrer" className="text-whatsapp-green hover:underline">
-                    Visit ECI Electoral Search →
+                    Visit ECI election help pages &rarr;
                   </a>
                 </p>
               </motion.div>
@@ -150,7 +133,6 @@ export default function FindElectionOffices() {
             transition={{ duration: 0.3 }}
             className="w-full h-full relative"
           >
-            {/* Back Button */}
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -161,10 +143,9 @@ export default function FindElectionOffices() {
               className="absolute top-4 left-4 z-20 bg-whatsapp-green text-white p-2 rounded-full hover:bg-whatsapp-green/90 transition-colors shadow-lg"
               title="Go back"
             >
-              ←
+              <span aria-hidden="true">&larr;</span>
             </motion.button>
 
-            {/* Map Component */}
             <ElectionOffices searchQuery={searchInput} />
           </motion.div>
         )}
