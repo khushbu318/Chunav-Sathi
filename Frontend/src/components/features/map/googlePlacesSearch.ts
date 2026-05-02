@@ -25,12 +25,13 @@ export interface SearchResult {
 }
 
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') || '';
 
 export const searchLocations = async (query: string, lat?: number, lng?: number): Promise<SearchResult[]> => {
   if (!query.trim() && lat === undefined && lng === undefined) return [];
 
-  const url = new URL(`${API_BASE_URL}/find-booths`);
+  const endpoint = API_BASE_URL ? `${API_BASE_URL}/find-booths` : '/find-booths';
+  const url = API_BASE_URL ? new URL(endpoint) : new URL(endpoint, window.location.origin);
   url.searchParams.set('location_query', query);
   if (lat !== undefined && lng !== undefined) {
     url.searchParams.set('lat', String(lat));

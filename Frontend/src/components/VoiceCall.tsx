@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { MicOff, PhoneOff, Volume2, Mic } from 'lucide-react';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') || '';
+
 const languageMap: Record<string, string> = {
   'English': 'en-IN',
   'हिंदी': 'hi-IN',
@@ -111,7 +113,7 @@ export function VoiceCall({ onClose, selectedLanguage }: VoiceCallProps) {
   const handleBotResponse = async (userText: string) => {
     try {
       // Call the backend API with chat history
-      const res = await fetch('http://localhost:8000/chat', {
+      const res = await fetch(`${API_BASE_URL}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

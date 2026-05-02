@@ -2,6 +2,7 @@ import os
 from math import radians, sin, cos, sqrt, atan2
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List, Optional
 from dotenv import load_dotenv
@@ -13,8 +14,10 @@ from urllib.parse import quote_plus
 # Load environment variables
 load_dotenv()
 
-# This line tells Google's library where to look for the key
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+# Only set application credentials if the variable is configured.
+GOOGLE_APPLICATION_CREDENTIALS = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+if GOOGLE_APPLICATION_CREDENTIALS:
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = GOOGLE_APPLICATION_CREDENTIALS
 
 
 
@@ -23,6 +26,10 @@ LOCATION = os.getenv("GCP_LOCATION", "us-central1")
 
 MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 gmaps = googlemaps.Client(key=MAPS_API_KEY)
+
+ALLOWED_ORIGIN = os.getenv("ALLOWED_ORIGIN", "")
+ALLOWED_ORIGINS = [origin.strip() for origin in ALLOWED_ORIGIN.split(",") if origin.strip()] or ["*"]
+STATIC_DIR = os.getenv("STATIC_DIR", os.path.join(os.path.dirname(__file__), "../frontend/dist"))
 
 def haversine_km(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
     lat1, lng1, lat2, lng2 = map(radians, [lat1, lng1, lat2, lng2])
@@ -116,7 +123,7 @@ app = FastAPI()
 # Add CORS middleware to allow frontend requests
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins in development, restrict in production
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -229,3 +236,6 @@ async def find_booths(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+# Serve frontend static assets from the build output.
+app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="frontend")

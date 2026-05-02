@@ -1,0 +1,17 @@
+# Ignore node_modules, Python venv, and local config
+node_modules
+Frontend/node_modules
+Backend/chunav_sathi_venv
+**/__pycache__
+**/*.py[cod]
+**/*.pyo
+**/*.pyd
+**/__pypackages__
+**/.pytest_cache
+**/.venv
+**/.env
+**/*.env
+**/application_default_credentials.json
+.git
+.gitignore
+*.log
