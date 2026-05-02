@@ -16,8 +16,6 @@ const TimelineItemComponent: React.FC<TimelineItemComponentProps> = ({
   isExpanded,
   onToggleExpand,
 }) => {
-  const date = new Date(event.date + 'T00:00:00');
-
   return (
     <motion.div
       className={`timeline-item ${isExpanded ? 'expanded' : ''}`}
