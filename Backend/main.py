@@ -1,3 +1,4 @@
+import logging
 import os
 from math import radians, sin, cos, sqrt, atan2
 from fastapi import FastAPI, HTTPException, Query
@@ -21,7 +22,13 @@ if GOOGLE_APPLICATION_CREDENTIALS:
 
 
 
-PROJECT_ID = os.getenv("GCP_PROJECT_ID")
+logging.basicConfig(level=logging.INFO)
+
+PROJECT_ID = (
+    os.getenv("GCP_PROJECT_ID")
+    or os.getenv("GOOGLE_CLOUD_PROJECT")
+    or os.getenv("GCLOUD_PROJECT")
+)
 LOCATION = os.getenv("GCP_LOCATION", "us-central1")
 
 MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
@@ -110,13 +117,19 @@ LANGUAGE RULES:
 """
 
 # Initialize the model with the system instruction
+vertexai_init_kwargs = {"location": LOCATION}
+if PROJECT_ID:
+    vertexai_init_kwargs["project"] = PROJECT_ID
 
-vertexai.init(project=PROJECT_ID, location=LOCATION)
-model = GenerativeModel(
-    "gemini-2.5-flash",
-    system_instruction=[ELECTION_ASSISTANT_PROMPT]
-)
-# model = GenerativeModel("gemini-2.5-flash")
+try:
+    vertexai.init(**vertexai_init_kwargs)
+    model = GenerativeModel(
+        "gemini-2.5-flash",
+        system_instruction=[ELECTION_ASSISTANT_PROMPT]
+    )
+except Exception as e:
+    logging.error("Vertex AI initialization failed: %s", e, exc_info=True)
+    model = None
 
 app = FastAPI()
 
@@ -140,6 +153,15 @@ class ChatRequest(BaseModel):
 
 @app.post("/api/chat")
 async def chat(request: ChatRequest):
+    if model is None:
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "AI model is not initialized. "
+                "Please check Cloud Run service account credentials and Vertex AI configuration."
+            ),
+        )
+
     try:
         # Convert history for Vertex AI
         formatted_history = [
@@ -171,7 +193,10 @@ from google.cloud import aiplatform
 async def list_available_models():
     try:
         # Initialize the AI Platform
-        aiplatform.init(project=PROJECT_ID, location=LOCATION)
+        aiplatform_args = {"location": LOCATION}
+        if PROJECT_ID:
+            aiplatform_args["project"] = PROJECT_ID
+        aiplatform.init(**aiplatform_args)
         
         # List all models in the project
         models = aiplatform.Model.list()
@@ -187,6 +212,7 @@ async def list_available_models():
         
         return {"available_models": model_list}
     except Exception as e:
+        logging.error("Model debug route failed: %s", e, exc_info=True)
         return {"error": str(e)}
     
 @app.get("/find-booths")
