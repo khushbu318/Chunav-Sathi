@@ -32,7 +32,7 @@ PROJECT_ID = (
 LOCATION = os.getenv("GCP_LOCATION", "us-central1")
 
 MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
-gmaps = googlemaps.Client(key=MAPS_API_KEY)
+gmaps = googlemaps.Client(key=MAPS_API_KEY) if MAPS_API_KEY else None
 
 ALLOWED_ORIGIN = os.getenv("ALLOWED_ORIGIN", "")
 ALLOWED_ORIGINS = [origin.strip() for origin in ALLOWED_ORIGIN.split(",") if origin.strip()] or ["*"]
@@ -221,9 +221,16 @@ async def find_booths(
     lat: Optional[float] = Query(None, description="Optional latitude for location-based search"),
     lng: Optional[float] = Query(None, description="Optional longitude for location-based search")
 ):
+    if gmaps is None:
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "Google Maps API is not configured. "
+                "Please set GOOGLE_MAPS_API_KEY environment variable."
+            ),
+        )
+
     try:
-        if not MAPS_API_KEY:
-            raise HTTPException(status_code=500, detail="Google Maps API key is not configured on the backend.")
 
         # Use provided coordinates when available, otherwise geocode the text query.
         if lat is None or lng is None:
