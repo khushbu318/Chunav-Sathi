@@ -1,0 +1,41 @@
+/* Stories Component Specific Styles */
+/* Additional styles for the Stories component beyond the base story-viewer styles */
+
+.story-viewer {
+  /* Ensure full screen coverage */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.story-body {
+  /* Enhanced text readability */
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+.story-a {
+  /* Better text wrapping for long answers */
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .story-q {
+    font-size: 20px;
+    padding: 0 20px;
+  }
+
+  .story-a {
+    padding: 12px 16px;
+    font-size: 14px;
+    max-width: 320px;
+  }
+
+  .story-emoji-big {
+    font-size: 50px;
+  }
+}

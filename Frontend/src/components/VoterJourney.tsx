@@ -383,7 +383,7 @@ export default function VoterJourney() {
             >
               <span className="flex-1 text-center">
                 {currentStep === 3 && !voted
-                  ? "Cast Your Vote"
+                  ? "Cast Your Vote By Clicking EVM Blue Button"
                   : currentStep === stages.length - 1
                     ? "Finish"
                     : "Continue"}

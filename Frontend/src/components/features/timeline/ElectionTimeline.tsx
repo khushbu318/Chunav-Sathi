@@ -5,22 +5,6 @@ import type { TimelineEvent } from './timeline-data';
 import { getTimelineEvents } from './timeline-data';
 import './ElectionTimeline.css';
 
-const TimelineHeader: React.FC = () => {
-  return (
-    <motion.div
-      className="timeline-header"
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <h1 className="timeline-header-title">Election Timeline & Key Dates</h1>
-      <p className="timeline-header-subtitle">
-        Reference dates and milestones for election awareness. Verify important deadlines on official ECI websites.
-      </p>
-    </motion.div>
-  );
-};
-
 interface TimelineItemComponentProps {
   event: TimelineEvent;
   isExpanded: boolean;
@@ -135,8 +119,6 @@ const ElectionTimeline: React.FC<ElectionTimelineProps> = () => {
       role="main"
       aria-label="Election Timeline"
     >
-      <TimelineHeader />
-
       <div className="timeline-content">
         {timelineEvents.length > 0 ? (
           <motion.div

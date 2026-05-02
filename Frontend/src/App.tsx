@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -13,16 +13,10 @@ import {
   Mic,
   Send,
   User,
-  Map as MapIcon,
+  MapPin,
   Calendar,
   BookOpen,
-  ChevronRight,
-  ChevronLeft,
-  MapPin,
-  X,
-  PhoneOff,
-  MicOff,
-  Volume2
+  ChevronRight
 } from 'lucide-react';
 import VoterJourney from './components/VoterJourney';
 import { VoiceCall } from './components/VoiceCall';
@@ -31,6 +25,8 @@ import ElectionProcess from './components/features/election-process/ElectionProc
 import './components/features/election-process/ElectionProcess.css';
 import ElectionTimeline from './components/features/timeline/ElectionTimeline';
 import './components/features/timeline/ElectionTimeline.css';
+import Stories from './components/Stories';
+import './components/Stories.css';
 
 // --- Components ---
 
@@ -62,7 +58,7 @@ const SidebarRail = ({ activeTab, setTab, onSettings }: any) => (
   </div>
 );
 
-const ChatItem = ({ id, icon: Icon, colorClass, name, preview, meta, active, onClick, statusGradient, tabType }: any) => {
+const ChatItem = ({ id, icon: Icon, colorClass, name, preview, meta, active, onClick, tabType }: any) => {
   const isStatus = tabType === 'status';
   const faqCount = meta?.faqCount || 1;
 
@@ -146,6 +142,7 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [isCalling, setIsCalling] = useState(false);
   const [chatInput, setChatInput] = useState('');
+  const [searchInput, setSearchInput] = useState('');
   const [messages, setMessages] = useState([
     { type: 'bot', text: `Namaste! 🙏 Main hoon aapka **Chunav Sathi**. Chunav ke bare mein kuch bhi puchein — text ya voice mein!\n\nTo change language, tap the three dots icon (⋮) in the left sidebar and select your preferred language.\n\n(Current Language: ${selectedLanguage})`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
   ]);
@@ -171,7 +168,7 @@ export default function App() {
       name: 'Find Election Offices & Polling Booths',
       preview: '📍 Powered by Google Maps',
       statusPreview: 'Find nearest polling booth · Election office · Voter registration',
-      meta: { time: 'Live', faqCount: 4 }
+      meta: { time: 'Live', faqCount: 5 }
     },
     {
       id: 'timeline',
@@ -181,7 +178,7 @@ export default function App() {
       name: 'Election Timeline',
       preview: '⏳ Countdown to key dates',
       statusPreview: 'MCC dates · Counting day · Get reminders',
-      meta: { time: 'Live', faqCount: 4 }
+      meta: { time: 'Live', faqCount: 5 }
     },
     {
       id: 'learn',
@@ -201,15 +198,16 @@ export default function App() {
       name: 'Chat with Chunav Sathi',
       preview: '🤖 Ask anything · 📞 Voice call available',
       statusPreview: 'How to use chatbot · Voice call guide',
-      meta: { time: 'Bot', faqCount: 4 }
+      meta: { time: 'Bot', faqCount: 5 }
     },
   ];
 
-  const handleSend = async () => {
-    if (!chatInput.trim()) return;
-    const userMsg = chatInput;
+  const handleSend = async (message?: string) => {
+    const msg = message || chatInput;
+    if (!msg.trim()) return;
+    const userMsg = msg;
     setMessages(prev => [...prev, { type: 'user', text: userMsg, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
-    setChatInput('');
+    if (!message) setChatInput('');
     setIsTyping(true);
 
     try {
@@ -231,37 +229,31 @@ export default function App() {
     }
   };
 
-  const [activeStory, setActiveStory] = useState<string | null>(null);
-  const [storyStep, setStoryStep] = useState(0);
-  const [isStoryPaused, setIsStoryPaused] = useState(false);
-
-  useEffect(() => {
-    if (!activeStory || isStoryPaused) return;
-
-    const timer = setInterval(() => {
-      setStoryStep((prev) => {
-        const feature = features.find(f => f.id === activeStory);
-        const maxSteps = feature?.meta?.faqCount || 3;
-        if (prev < maxSteps - 1) return prev + 1;
-        setActiveStory(null);
-        return 0;
-      });
-    }, 40000); // 40 seconds
-
-    return () => clearInterval(timer);
-  }, [activeStory, isStoryPaused]);
-
-  const handleStoryNav = (direction: 'prev' | 'next') => {
-    const feature = features.find(f => f.id === activeStory);
-    const maxSteps = feature?.meta?.faqCount || 3;
-
-    if (direction === 'next') {
-      if (storyStep < maxSteps - 1) setStoryStep(s => s + 1);
-      else setActiveStory(null);
-    } else {
-      if (storyStep > 0) setStoryStep(s => s - 1);
+  const handleSearchSubmit = () => {
+    const query = searchInput.trim().toLowerCase();
+    let matchedFeature = null;
+    if (query.includes('voter') || query.includes('first time') || query.includes('journey') || query.includes('id')) {
+      matchedFeature = 'journey';
+    } else if (query.includes('booth') || query.includes('polling') || query.includes('office') || query.includes('map') || query.includes('find')) {
+      matchedFeature = 'map';
+    } else if (query.includes('timeline') || query.includes('date') || query.includes('election day') || query.includes('countdown')) {
+      matchedFeature = 'timeline';
+    } else if (query.includes('process') || query.includes('learn') || query.includes('lok sabha') || query.includes('rajya sabha') || query.includes('panchayat')) {
+      matchedFeature = 'learn';
+    } else if (query.includes('chat') || query.includes('ask') || query.includes('anything') || query.includes('ai')) {
+      matchedFeature = 'chat';
     }
+    if (matchedFeature) {
+      setActiveTab('status');
+      setActiveStory(matchedFeature);
+    } else {
+      setActivePanel('chat');
+      handleSend(searchInput);
+    }
+    setSearchInput('');
   };
+
+  const [activeStory, setActiveStory] = useState<string | null>(null);
 
   return (
     <div className="app">
@@ -288,7 +280,13 @@ export default function App() {
             <div className="search-bar">
               <div className="search-wrap">
                 <Search className="search-icon" size={13} />
-                <input className="search-input" placeholder="Ask anything to your Chunav Sathi" readOnly />
+                <input 
+                  className="search-input" 
+                  placeholder="Ask anything to your Chunav Sathi" 
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit()}
+                />
               </div>
             </div>
             <div className="chat-list">
@@ -453,7 +451,7 @@ export default function App() {
                       />
                       <button
                         className={`send-btn transition-colors duration-200 ${!chatInput.trim() ? 'opacity-50 cursor-not-allowed bg-[#2a3942] text-[#8696a0]' : 'bg-[#00a884] text-white hover:bg-[#06cf9c]'}`}
-                        onClick={handleSend}
+                        onClick={() => handleSend()}
                         disabled={!chatInput.trim()}
                       >
                         <Send size={16} fill={chatInput.trim() ? "currentColor" : "none"} />
@@ -499,78 +497,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* Story Viewer Overlay */}
-      <AnimatePresence>
-        {activeStory && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="story-viewer open"
-            onMouseDown={() => setIsStoryPaused(true)}
-            onMouseUp={() => setIsStoryPaused(false)}
-            onTouchStart={() => setIsStoryPaused(true)}
-            onTouchEnd={() => setIsStoryPaused(false)}
-          >
-            <div className="story-prog">
-              {Array.from({ length: features.find(f => f.id === activeStory)?.meta?.faqCount || 3 }).map((_, i) => (
-                <div key={i} className={`sp ${i === storyStep ? 'active' : i < storyStep ? 'done' : ''}`}>
-                  {i === storyStep && <div className="spf" style={{ animationDuration: isStoryPaused ? '0s' : '40s' }}></div>}
-                </div>
-              ))}
-            </div>
-            <div className="story-topbar">
-              <div
-                className="story-av-sm"
-                style={{ background: features.find(f => f.id === activeStory)?.colorClass }}
-              >
-                {(() => {
-                  const Icon = features.find(f => f.id === activeStory)?.icon;
-                  return typeof Icon === 'string' ? Icon : (Icon ? <Icon size={16} /> : null);
-                })()}
-              </div>
-              <div className="flex-1">
-                <div className="story-name">{features.find(f => f.id === activeStory)?.name}</div>
-                <div className="text-[10px] text-white/60">FAQ Card {storyStep + 1}</div>
-              </div>
-              <button className="s-close" onClick={() => setActiveStory(null)}>
-                <X size={22} />
-              </button>
-            </div>
-            <div className="story-body select-none">
-              <motion.div
-                key={`${activeStory}-${storyStep}`}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="flex flex-col items-center gap-6"
-              >
-                <div className="story-emoji-big scale-125 drop-shadow-lg">
-                  {['🚶', '🗺', '📅', '📚', '🤖'][features.findIndex(f => f.id === activeStory) - 1] || '🗳'}
-                </div>
-                <div className="story-q text-2xl px-4 font-bold">
-                  {storyStep === 0 ? 'How do I make my Voter ID?' : storyStep === 1 ? 'Where is my polling booth?' : 'What documents are needed?'}
-                </div>
-                <div className="story-a backdrop-blur-md bg-white/10 border border-white/10 shadow-2xl">
-                  {storyStep === 0
-                    ? 'Visit voters.eci.gov.in → Fill Form 6 → Upload Aadhaar + photo → Get card in 7 days.'
-                    : 'Use the "My Constituency" tab or visit electoralsearch.eci.gov.in to find your booth.'}
-                </div>
-              </motion.div>
-              <span className="story-pill bg-[#00a884] text-white shadow-lg mt-12 uppercase tracking-widest font-bold text-[10px]">
-                {activeStory}
-              </span>
-            </div>
-            <div className="story-nav">
-              <div className="snl" onClick={(e) => { e.stopPropagation(); handleStoryNav('prev'); }}></div>
-              <div className="snr" onClick={(e) => { e.stopPropagation(); handleStoryNav('next'); }}></div>
-            </div>
-            {isStoryPaused && (
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/40 px-4 py-2 rounded-full text-xs text-white/80 backdrop-blur-sm">
-                Paused
-              </div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <Stories activeStory={activeStory} onClose={() => setActiveStory(null)} />
 
       {/* Settings Overlay */}
       <AnimatePresence>
@@ -597,14 +524,6 @@ export default function App() {
                     </button>
                   ))}
                   
-                </div>
-              </div>
-              <div className="mb-6">
-                <div className="text-xs text-whatsapp-subtext mb-2">Theme</div>
-                <div className="flex gap-2">
-                  <button className="theme-btn sel">Dark</button>
-                  <button className="theme-btn">Light</button>
-                  <button className="theme-btn">System</button>
                 </div>
               </div>
               <button className="close-btn" onClick={() => setShowSettings(false)}>Done</button>
