@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   Smartphone,
 } from "lucide-react";
+import "./VoterJourney.css";
 
 const stages = [
   {
@@ -259,13 +260,12 @@ export default function VoterJourney() {
                       initial={{ scaleY: 0, opacity: 0 }}
                       animate={{ scaleY: 1, opacity: 1 }}
                       transition={{ delay: 1, duration: 1.2, ease: "easeOut" }}
-                      style={{ originY: 0 }}
-                      className="absolute top-[18.5%] left-[40.2%] -translate-x-1/2 w-2 h-7 z-20 ink-animation"
+                      className="ink-animation"
                     >
                       {/* Ink core */}
-                      <div className="w-full h-full bg-blue-700 rounded-full shadow-[0_0_10px_2px_rgba(30,64,175,0.5)] border-2 border-blue-300 ink-core" />
+                      <div className="ink-core" />
                       {/* Ink shine */}
-                      <div className="absolute left-1/2 -translate-x-1/2 top-2 w-1 h-3 bg-blue-200/60 rounded-full blur-[1px] opacity-70" />
+                      <div className="ink-shine" />
                     </motion.div>
                     {/* Success Glow */}
                     <motion.div
@@ -282,7 +282,7 @@ export default function VoterJourney() {
             </div>
 
             {/* Text Content */}
-            <div className="text-center w-full max-w-lg flex flex-col gap-2">
+            <div className="journey-text-section">
               <div>
                 <h2 className="step-title">{stages[currentStep].title}</h2>
                 <p className="step-description">{stages[currentStep].desc}</p>
@@ -308,8 +308,8 @@ export default function VoterJourney() {
       </div>
 
       {/* Navigation Footer */}
-      <div className="bg-[#202c33]/95 backdrop-blur-2xl border-t border-whatsapp-border/50 p-6 flex justify-center">
-        <div className="flex items-center gap-8 w-full max-w-2xl justify-center relative">
+      <div className="journey-footer">
+        <div className="journey-footer-inner">
           <button
             onClick={handlePrev}
             disabled={currentStep === 0}
@@ -318,10 +318,10 @@ export default function VoterJourney() {
             }`}
           >
             <ChevronLeft size={22} className="shrink-0" />
-            <span className="flex-1 text-center">Back</span>
+            <span className="nav-button-label">Back</span>
           </button>
 
-          <div className="flex gap-4">
+          <div className="journey-progress">
             {stages.map((_, i) => (
               <motion.div
                 key={i}
@@ -333,17 +333,11 @@ export default function VoterJourney() {
                   repeat: i === currentStep ? Infinity : 0,
                 }}
                 className={`progress-indicator ${i === currentStep ? "active" : "inactive"}`}
-                style={{
-                  width: i === currentStep ? "48px" : "10px",
-                  height: "10px",
-                }}
               />
             ))}
           </div>
 
-
-
-          <div className="relative group">
+          <div className="relative group journey-next-group">
             {/* Tooltip — shows only on step 3 before voting */}
             {currentStep === 3 && !voted && (
               <motion.div
@@ -351,7 +345,7 @@ export default function VoterJourney() {
                 animate={{ opacity: 1, y: 0 }}
                 className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max bg-[#1a2731] border border-whatsapp-green/30 text-whatsapp-green text-[11px] font-semibold px-3 py-1.5 rounded-full shadow-lg whitespace-nowrap"
               >
-                
+                Please vote before continuing.
               </motion.div>
             )}
 
@@ -367,7 +361,7 @@ export default function VoterJourney() {
                   : ""
               }`}
             >
-              <span className="flex-1 text-center">
+              <span className="nav-button-label">
                 {currentStep === 3 && !voted
                   ? "Cast Your Vote By Clicking EVM Blue Button"
                   : currentStep === stages.length - 1

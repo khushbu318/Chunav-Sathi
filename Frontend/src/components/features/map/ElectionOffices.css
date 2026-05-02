@@ -28,9 +28,7 @@
   --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.2);
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   MAIN CONTAINER
-   ═══════════════════════════════════════════════════════════════════ */
+/* ── MAIN CONTAINER ── */
 
 .election-offices-container {
   display: flex;
@@ -46,10 +44,7 @@
   overflow: hidden;
 }
 
-
-/* ═══════════════════════════════════════════════════════════════════
-   SEARCH SECTION
-   ═══════════════════════════════════════════════════════════════════ */
+/* ── SEARCH SECTION ── */
 
 .eo-search-section {
   background: var(--eo-bg);
@@ -63,7 +58,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   margin-bottom: 0.75rem;
 }
 
@@ -71,6 +66,7 @@
   position: relative;
   flex: 1;
   min-width: 0;
+  display: flex;
 }
 
 .eo-search-icon {
@@ -83,8 +79,9 @@
   transition: color var(--transition-fast);
 }
 .eo-search-input {
-  width: 39rem;
+  width: 100%;
   flex: 1;
+  min-width: 0;
   background: var(--eo-panel);
   border: 2px solid var(--eo-border);
   border-radius: 50px;
@@ -120,6 +117,7 @@
   flex-shrink: 0;
   position: relative;
   overflow: hidden;
+  white-space: nowrap;
 }
 
 .eo-search-btn:hover:not(:disabled) {
@@ -151,6 +149,8 @@
   cursor: pointer;
   transition: all var(--transition-base);
   position: relative;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .eo-geolocation-btn:hover:not(:disabled) {
@@ -189,9 +189,7 @@
   margin-top: 2px;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   RESULTS SECTION
-   ═══════════════════════════════════════════════════════════════════ */
+/* ── RESULTS SECTION ── */
 
 .eo-results-section {
   flex: 1;
@@ -321,9 +319,7 @@
   margin: 0;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   RESULT ITEMS - Interactive Cards
-   ═══════════════════════════════════════════════════════════════════ */
+/* ── RESULT ITEMS - INTERACTIVE CARDS ── */
 
 .eo-result-item {
   display: flex;
@@ -470,9 +466,7 @@
   border-color: rgba(239, 68, 68, 0.3);
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   EXPANDABLE CARDS
-   ═══════════════════════════════════════════════════════════════════ */
+/* ── EXPANDABLE CARDS ── */
 
 .eo-expanded-content {
   margin-top: 1.25rem;
@@ -615,9 +609,7 @@
   text-align: center;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   ACTION BUTTONS
-   ═══════════════════════════════════════════════════════════════════ */
+/* ── ACTION BUTTONS ── */
 
 .eo-action-buttons {
   display: flex;
@@ -652,9 +644,7 @@
   transform: scale(0.95);
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   GOOGLE MAPS BUTTON
-   ═══════════════════════════════════════════════════════════════════ */
+/* ── GOOGLE MAPS BUTTON ── */
 
 .eo-maps-button {
   display: flex;
@@ -692,9 +682,7 @@
   height: 18px;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   LOADING SKELETONS
-   ═══════════════════════════════════════════════════════════════════ */
+/* ── LOADING SKELETONS ── */
 
 .eo-skeleton {
   pointer-events: none;
@@ -750,25 +738,16 @@
   50% { opacity: 0.7; }
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   RESPONSIVE DESIGN - TABLET
-   ═══════════════════════════════════════════════════════════════════ */
+/* ── RESPONSIVE DESIGN - TABLET ── */
 
 @media (max-width: 768px) {
-  .eo-header {
-    padding: 1.25rem 1.5rem;
-  }
-
-  .eo-header-title {
-    font-size: 1.25rem;
-  }
-
   .eo-search-section {
     padding: 1rem 1.5rem;
   }
 
-  .eo-search-wrapper {
+  .eo-search-row {
     gap: 0.5rem;
+    margin-bottom: 0.5rem;
   }
 
   .eo-search-input {
@@ -779,6 +758,11 @@
   .eo-search-btn {
     padding: 0.65rem 1.25rem;
     font-size: 0.85rem;
+  }
+
+  .eo-geolocation-btn {
+    padding: 0.65rem 1rem;
+    font-size: 0.8rem;
   }
 
   .eo-result-item {
@@ -800,6 +784,10 @@
     font-size: 0.8rem;
   }
 
+  .eo-result-meta-row {
+    gap: 0.5rem;
+  }
+
   .eo-maps-button {
     padding: 0.75rem 1rem;
     font-size: 0.75rem;
@@ -813,84 +801,295 @@
   .eo-loading-state {
     padding: 2rem 1.5rem;
   }
-}
 
-/* ═══════════════════════════════════════════════════════════════════
-   RESPONSIVE DESIGN - MOBILE
-   ═══════════════════════════════════════════════════════════════════ */
-
-@media (max-width: 480px) {
-  .eo-header {
-    padding: 1rem 1rem 0.75rem;
+  .eo-empty-title {
+    font-size: 1rem;
   }
 
-  .eo-header-title {
-    font-size: 1.1rem;
+  .eo-empty-text {
+    font-size: 0.85rem;
+    max-width: 300px;
+  }
+}
+
+/* ── RESPONSIVE DESIGN - MOBILE ── */
+
+@media (max-width: 480px) {
+  .eo-search-section {
+    padding: 0.875rem 0.75rem;
+  }
+
+  .eo-search-row {
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+    margin-bottom: 0.5rem;
   }
 
   .eo-search-wrapper {
-    flex-direction: column;
-    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
   }
 
-  .eo-search-input,
+  .eo-search-input {
+    font-size: 0.85rem;
+    padding: 0.6rem 0.875rem;
+    border-radius: 40px;
+  }
+
+  .eo-search-icon {
+    left: 0.75rem;
+    width: 14px;
+    height: 14px;
+  }
+
+  .eo-search-input::placeholder {
+    font-size: 0.8rem;
+  }
+
   .eo-search-btn {
-    width: 100%;
+    padding: 0.6rem 1.1rem;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+    white-space: nowrap;
   }
 
   .eo-geolocation-btn {
-    width: 100%;
-    justify-content: center;
+    display: none;
+  }
+
+  .eo-helpline {
+    font-size: 0.75rem;
+    margin-top: 0.5rem;
   }
 
   .eo-result-item {
-    flex-direction: column;
-    padding: 0.875rem 1rem;
+    padding: 0.875rem 0.75rem;
+    gap: 0.75rem;
+    flex-direction: row;
   }
 
   .eo-result-icon {
-    width: 44px;
-    height: 44px;
-    font-size: 1.4rem;
+    width: 40px;
+    height: 40px;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  .eo-result-name {
+    font-size: 0.9rem;
+  }
+
+  .eo-result-type {
+    font-size: 0.7rem;
+  }
+
+  .eo-result-address {
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+  }
+
+  .eo-result-header-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
 
   .eo-result-meta-row {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    gap: 0.35rem;
+    margin-top: 0.35rem;
+    font-size: 0.7rem;
   }
 
-  .eo-maps-button {
-    width: 100%;
-    flex-direction: row;
-    justify-content: center;
-    gap: 0.5rem;
+  .eo-distance-badge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .eo-rating {
+    gap: 0.15rem;
+  }
+
+  .eo-rating-text {
+    font-size: 0.7rem;
+  }
+
+  .eo-status {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+    gap: 0.15rem;
+  }
+
+  .eo-status svg {
+    width: 12px;
+    height: 12px;
   }
 
   .eo-action-buttons {
     flex-direction: row;
     width: 100%;
-    margin-top: 0.75rem;
+    margin-top: 0.5rem;
+    gap: 0.35rem;
+  }
+
+  .eo-maps-button {
+    padding: 0.6rem 0.9rem;
+    font-size: 0.75rem;
+    gap: 0.25rem;
+    flex: 1;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .eo-maps-button svg {
+    width: 14px;
+    height: 14px;
   }
 
   .eo-expand-btn {
     width: 36px;
     height: 36px;
+    font-size: 0.7rem;
+  }
+
+  .eo-result-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .eo-result-item .eo-result-icon {
+    margin-bottom: 0.75rem;
+  }
+
+  .eo-result-details {
+    width: 100%;
+  }
+
+  .eo-result-header-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .eo-result-meta-row {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .eo-action-buttons {
+    width: 100%;
+    margin-top: 0.75rem;
+    justify-content: stretch;
+  }
+
+  .eo-maps-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .eo-results-header {
+    padding: 0.875rem 0.75rem;
+  }
+
+  .eo-results-header h3 {
+    font-size: 0.95rem;
+  }
+
+  .eo-results-subtitle {
+    font-size: 0.75rem;
+  }
+
+  .eo-empty-state,
+  .eo-loading-state {
+    padding: 1.5rem 0.75rem;
+  }
+
+  .eo-empty-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .eo-empty-title {
+    font-size: 0.95rem;
+  }
+
+  .eo-empty-text {
+    font-size: 0.8rem;
+    max-width: 260px;
+  }
+
+  .eo-loader {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .eo-loading-text {
+    font-size: 0.85rem;
   }
 
   .eo-details-content {
-    gap: 1rem;
-    padding: 1.25rem;
+    gap: 0.875rem;
+    padding: 1rem;
+  }
+
+  .eo-detail-item {
+    font-size: 0.85rem;
+    padding: 0.6rem;
+    gap: 0.5rem;
+  }
+
+  .eo-detail-item svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .eo-static-map {
+    border-radius: 10px;
+  }
+
+  .eo-phone-link {
+    font-size: 0.85rem;
+  }
+
+  .eo-hours {
+    gap: 0.15rem;
+  }
+
+  .eo-hours-title {
+    font-size: 0.85rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .eo-hour-item {
+    font-size: 0.8rem;
   }
 
   .eo-directions-btn {
-    align-self: stretch;
-    justify-content: center;
+    font-size: 0.8rem;
+    padding: 0.6rem 1.2rem;
+    gap: 0.35rem;
+  }
+
+  .eo-directions-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .eo-search-error {
+    font-size: 0.8rem;
+    padding: 0.6rem 0.75rem;
+    gap: 0.35rem;
+    margin-top: 0.5rem;
+  }
+
+  .eo-search-error svg {
+    width: 14px;
+    height: 14px;
   }
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   ACCESSIBILITY
-   ═══════════════════════════════════════════════════════════════════ */
+/* ── ACCESSIBILITY ── */
 
 .eo-search-input:focus-visible,
 .eo-search-btn:focus-visible,

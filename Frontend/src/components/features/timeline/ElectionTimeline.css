@@ -344,48 +344,528 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   RESPONSIVE DESIGN
+   RESPONSIVE DESIGN - MOBILE FIRST APPROACH
    ═══════════════════════════════════════════════════════════════════ */
 
-@media (max-width: 640px) {
-  .timeline-header-title {
-    font-size: 1.4rem;
+/* Extra small devices (320px - 374px) */
+@media (max-width: 374px) {
+  .timeline-content {
+    padding: 0.75rem 0.5rem;
   }
 
-  .timeline-header-subtitle {
-    font-size: 0.85rem;
-  }
-
+  /* Hide timeline visual elements on mobile */
   .timeline-items {
-    padding-left: 1.25rem;
+    padding-left: 0;
+    position: relative;
+  }
+
+  .timeline-items::before {
+    display: none;
   }
 
   .timeline-dot {
-    left: -1.3rem;
+    display: none;
   }
 
   .timeline-item {
-    padding: 1rem;
+    margin-bottom: 0.75rem;
+    padding: 0.6rem 0.65rem;
+    border-radius: 8px;
+  }
+
+  .timeline-item-header {
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
   }
 
   .timeline-icon {
-    width: 2.5rem;
-    height: 2.5rem;
-    font-size: 1.5rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 1rem;
+  }
+
+  .timeline-date {
+    font-size: 0.65rem;
+    letter-spacing: 0.15px;
+    margin-bottom: 0.15rem;
   }
 
   .timeline-title {
-    font-size: 1rem;
+    font-size: 0.85rem;
+    line-height: 1.15;
+    margin-bottom: 0.25rem;
+  }
+
+  .timeline-description {
+    font-size: 0.75rem;
+    margin-bottom: 0.4rem;
+    line-height: 1.3;
+  }
+
+  .timeline-sources-inline {
+    margin-top: 0.4rem;
+    padding-top: 0.4rem;
+  }
+
+  .timeline-source-link {
+    font-size: 0.7rem;
+    margin-right: 0.4rem;
+    padding: 0.2rem 0.4rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .timeline-expand-btn {
+    font-size: 0.75rem;
+    gap: 0.25rem;
+    padding: 0.4rem 0;
+    margin-top: 0.4rem;
+  }
+
+  .timeline-expand-icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .timeline-item-expandable {
+    margin-top: 0.6rem;
+    padding-top: 0.6rem;
+  }
+
+  .timeline-details {
+    font-size: 0.75rem;
+    padding: 0.6rem;
+    margin-bottom: 0.6rem;
+    line-height: 1.4;
+  }
+
+  .timeline-header {
+    padding: 0.6rem 0.5rem;
+  }
+
+  .timeline-header-title {
+    font-size: 1.2rem;
+  }
+
+  .timeline-header-subtitle {
+    font-size: 0.75rem;
+  }
+
+  .timeline-footer {
+    padding: 0.6rem 0.5rem;
+    font-size: 0.65rem;
+    min-height: auto;
+  }
+
+  .timeline-empty-state {
+    padding: 1.5rem 1rem;
+  }
+
+  .timeline-empty-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .timeline-empty-title {
+    font-size: 0.95rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .timeline-empty-desc {
+    font-size: 0.75rem;
+    line-height: 1.3;
+  }
+}
+
+/* Small devices (375px - 424px) - Like Oppo F21s Pro */
+@media (min-width: 375px) and (max-width: 424px) {
+  .timeline-content {
+    padding: 0.8rem 0.6rem;
+  }
+
+  /* Hide timeline visual elements on mobile */
+  .timeline-items {
+    padding-left: 0;
+    position: relative;
+  }
+
+  .timeline-items::before {
+    display: none;
+  }
+
+  .timeline-dot {
+    display: none;
+  }
+
+  .timeline-item {
+    margin-bottom: 0.8rem;
+    padding: 0.7rem 0.7rem;
+    border-radius: 8px;
+  }
+
+  .timeline-item-header {
+    gap: 0.6rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .timeline-icon {
+    width: 1.9rem;
+    height: 1.9rem;
+    font-size: 1.1rem;
+  }
+
+  .timeline-date {
+    font-size: 0.7rem;
+    margin-bottom: 0.15rem;
+  }
+
+  .timeline-title {
+    font-size: 0.88rem;
+    line-height: 1.15;
+    margin-bottom: 0.25rem;
+  }
+
+  .timeline-description {
+    font-size: 0.78rem;
+    margin-bottom: 0.4rem;
+    line-height: 1.3;
+  }
+
+  .timeline-sources-inline {
+    margin-top: 0.4rem;
+    padding-top: 0.4rem;
+  }
+
+  .timeline-source-link {
+    font-size: 0.72rem;
+    margin-right: 0.4rem;
+    padding: 0.22rem 0.45rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .timeline-expand-btn {
+    font-size: 0.78rem;
+    gap: 0.3rem;
+    padding: 0.4rem 0;
+    margin-top: 0.4rem;
+  }
+
+  .timeline-expand-icon {
+    width: 13px;
+    height: 13px;
+  }
+
+  .timeline-item-expandable {
+    margin-top: 0.6rem;
+    padding-top: 0.6rem;
+    max-height: 300px;
+  }
+
+  .timeline-details {
+    font-size: 0.78rem;
+    padding: 0.65rem;
+    margin-bottom: 0.6rem;
+    line-height: 1.4;
+  }
+
+  .timeline-header {
+    padding: 0.65rem 0.6rem;
+  }
+
+  .timeline-header-title {
+    font-size: 1.25rem;
+  }
+
+  .timeline-header-subtitle {
+    font-size: 0.75rem;
+  }
+
+  .timeline-footer {
+    padding: 0.65rem 0.6rem;
+    font-size: 0.68rem;
+    min-height: auto;
+    line-height: 1.2;
+  }
+
+  .timeline-empty-state {
+    padding: 1.5rem 1rem;
+  }
+
+  .timeline-empty-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .timeline-empty-title {
+    font-size: 0.95rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .timeline-empty-desc {
+    font-size: 0.76rem;
+    line-height: 1.3;
+  }
+}
+
+/* Medium devices (425px - 599px) - Larger mobile phones */
+@media (min-width: 425px) and (max-width: 599px) {
+  .timeline-content {
+    padding: 1rem 0.75rem;
+  }
+
+  /* Hide timeline visual elements on mobile */
+  .timeline-items {
+    padding-left: 0;
+    position: relative;
+  }
+
+  .timeline-items::before {
+    display: none;
+  }
+
+  .timeline-dot {
+    display: none;
+  }
+
+  .timeline-item {
+    margin-bottom: 1rem;
+    padding: 0.85rem;
+    border-radius: 10px;
+  }
+
+  .timeline-item-header {
+    gap: 0.75rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .timeline-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 1.35rem;
+  }
+
+  .timeline-date {
+    font-size: 0.76rem;
+    margin-bottom: 0.18rem;
+  }
+
+  .timeline-title {
+    font-size: 0.95rem;
+    line-height: 1.2;
+    margin-bottom: 0.3rem;
   }
 
   .timeline-description {
     font-size: 0.85rem;
+    margin-bottom: 0.45rem;
+    line-height: 1.4;
+  }
+
+  .timeline-sources-inline {
+    margin-top: 0.45rem;
+    padding-top: 0.45rem;
+  }
+
+  .timeline-source-link {
+    font-size: 0.75rem;
+    margin-right: 0.45rem;
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .timeline-expand-btn {
+    font-size: 0.8rem;
+    gap: 0.35rem;
+    padding: 0.45rem 0;
+    margin-top: 0.45rem;
+  }
+
+  .timeline-expand-icon {
+    width: 15px;
+    height: 15px;
+  }
+
+  .timeline-item-expandable {
+    margin-top: 0.7rem;
+    padding-top: 0.7rem;
+    max-height: 350px;
+  }
+
+  .timeline-details {
+    font-size: 0.85rem;
+    padding: 0.8rem;
+    margin-bottom: 0.7rem;
+    line-height: 1.45;
+  }
+
+  .timeline-header {
+    padding: 0.75rem;
+  }
+
+  .timeline-header-title {
+    font-size: 1.35rem;
+  }
+
+  .timeline-header-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .timeline-footer {
+    padding: 0.7rem 0.75rem;
+    font-size: 0.72rem;
+    min-height: auto;
+    line-height: 1.25;
+  }
+
+  .timeline-empty-state {
+    padding: 2rem 1.2rem;
+  }
+
+  .timeline-empty-icon {
+    font-size: 2.2rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .timeline-empty-title {
+    font-size: 1rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .timeline-empty-desc {
+    font-size: 0.8rem;
+    line-height: 1.35;
+  }
+}
+
+/* Tablet devices (600px - 768px) */
+@media (min-width: 600px) and (max-width: 768px) {
+  .timeline-content {
+    padding: 1.5rem;
+  }
+
+  .timeline-items {
+    padding-left: 1.75rem;
+  }
+
+  .timeline-dot {
+    left: -1.6rem;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .timeline-item {
+    margin-bottom: 2.75rem;
+    padding: 1.25rem;
+    border-radius: 12px;
+  }
+
+  .timeline-item-header {
+    gap: 1rem;
+  }
+
+  .timeline-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    font-size: 1.75rem;
+  }
+
+  .timeline-date {
+    font-size: 0.85rem;
+  }
+
+  .timeline-title {
+    font-size: 1.1rem;
+  }
+
+  .timeline-description {
+    font-size: 0.95rem;
+  }
+
+  .timeline-details {
+    font-size: 1rem;
+    padding: 1.25rem;
+  }
+
+  .timeline-header-title {
+    font-size: 1.5rem;
+  }
+
+  .timeline-header-subtitle {
+    font-size: 0.95rem;
+  }
+}
+
+/* Large devices (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .timeline-items {
+    padding-left: 2rem;
+  }
+
+  .timeline-item {
+    margin-bottom: 2.75rem;
+  }
+}
+
+/* Extra large devices (1025px and above) */
+@media (min-width: 1025px) {
+  .timeline-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .timeline-content {
+    padding: 2rem;
   }
 }
 
 /* ═══════════════════════════════════════════════════════════════════
    ANIMATIONS & TRANSITIONS
    ═══════════════════════════════════════════════════════════════════ */
+
+/* Mobile-friendly touch interactions */
+@media (hover: none) and (pointer: coarse) {
+  /* Disable hover effects on touch devices */
+  .timeline-item:hover {
+    transform: none;
+    box-shadow: 0 2px 8px rgba(255, 111, 0, 0.1);
+  }
+
+  .timeline-item:hover .timeline-icon {
+    transform: none;
+  }
+
+  .timeline-expand-btn:hover {
+    transform: none;
+  }
+
+  .timeline-source-link:hover {
+    transform: none;
+    background: rgba(0, 168, 132, 0.15);
+  }
+
+  /* Tap feedback */
+  .timeline-expand-btn:active {
+    opacity: 0.7;
+  }
+
+  .timeline-source-link:active {
+    opacity: 0.8;
+  }
+
+  /* Increase tap target size for better accessibility on mobile */
+  .timeline-expand-btn {
+    padding: 0.75rem 0.5rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  .timeline-source-link {
+    padding: 0.5rem 0.75rem;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .timeline-item,
@@ -409,5 +889,106 @@
   .timeline-item-expandable {
     max-height: none;
     opacity: 1;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ORIENTATION-SPECIFIC STYLES (LANDSCAPE & PORTRAIT)
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Portrait orientation (narrow screens) */
+@media (orientation: portrait) and (max-width: 599px) {
+  .timeline-content {
+    padding: 0.8rem 0.6rem;
+  }
+
+  /* Hide timeline on mobile portrait */
+  .timeline-items::before {
+    display: none;
+  }
+
+  .timeline-dot {
+    display: none;
+  }
+
+  .timeline-items {
+    padding-left: 0;
+  }
+
+  .timeline-icon {
+    flex-shrink: 0;
+  }
+
+  .timeline-item-header {
+    gap: 0.55rem;
+  }
+
+  .timeline-item {
+    margin-bottom: 0.85rem;
+  }
+}
+
+/* Landscape orientation (wide but short screens) */
+@media (orientation: landscape) and (max-height: 500px) {
+  .timeline-content {
+    padding: 0.75rem;
+  }
+
+  .timeline-item {
+    margin-bottom: 1.5rem;
+    padding: 0.75rem;
+  }
+
+  .timeline-dot {
+    top: 0.75rem;
+  }
+
+  .timeline-icon {
+    width: 2rem;
+    height: 2rem;
+    font-size: 1.25rem;
+  }
+
+  .timeline-title {
+    font-size: 0.95rem;
+  }
+
+  .timeline-description {
+    font-size: 0.85rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .timeline-item-expandable {
+    max-height: 300px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ACCESSIBILITY - FOCUS STATES & HIGH CONTRAST
+   ═══════════════════════════════════════════════════════════════════ */
+
+.timeline-expand-btn:focus-visible,
+.timeline-source-link:focus-visible {
+  outline: 2px solid var(--timeline-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: more) {
+  .timeline-item {
+    border-width: 2px;
+  }
+
+  .timeline-dot {
+    border-width: 4px;
+  }
+
+  .timeline-title {
+    font-weight: 800;
+  }
+
+  .timeline-expand-btn {
+    font-weight: 800;
   }
 }

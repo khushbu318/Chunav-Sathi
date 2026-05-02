@@ -35,7 +35,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') || ''
 
 const SidebarRail = ({ activeTab, setTab, onSettings }: any) => (
   <div className="sidebar-rail">
-    <div className="w-[34px] h-[34px] rounded-full bg-gradient-to-br from-whatsapp-orange to-whatsapp-yellow flex items-center justify-center text-[15px] cursor-pointer mb-2">
+    <div className="w-[34px] h-[34px] rounded-full bg-gradient-to-br from-whatsapp-orange to-whatsapp-yellow flex items-center justify-center text-[15px] cursor-pointer mb-2" onClick={() => setTab('chats')}>
       🗳
     </div>
     <div className="rail-divider"></div>
@@ -148,6 +148,14 @@ export default function App() {
   const [searchInput, setSearchInput] = useState('');
   const [isMobile, setIsMobile] = useState(false);
   const [mobileViewMode, setMobileViewMode] = useState<'list' | 'detail'>('list');
+
+  const handleSetTab = (tab: string) => {
+    setActiveTab(tab);
+    if (isMobile) {
+      setMobileViewMode('list');
+      window.history.replaceState({ mobileViewMode: 'list' }, '');
+    }
+  };
 
   useEffect(() => {
     const updateMobile = () => setIsMobile(window.innerWidth <= 768);
@@ -298,7 +306,7 @@ export default function App() {
       {/* Far Left Rail */}
       <SidebarRail
         activeTab={activeTab}
-        setTab={setActiveTab}
+        setTab={handleSetTab}
         onSettings={() => setShowSettings(true)}
       />
 
