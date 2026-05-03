@@ -34,18 +34,23 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
+      - name: Set project ID
+        run: |
+          gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+
       - name: Deploy to Cloud Run (from source)
         run: |
-          gcloud run deploy $SERVICE_NAME \
+          gcloud run deploy chunav-sathi \
             --source=. \
-            --region=$REGION \
+            --region=us-central1 \
             --platform=managed \
             --allow-unauthenticated \
             --port=8080 \
+            --project=${{ secrets.GCP_PROJECT_ID }} \
             --quiet
 
       - name: Get Cloud Run URL
         run: |
-          URL=$(gcloud run services describe $SERVICE_NAME --region=$REGION --format='value(status.url)')
+          URL=$(gcloud run services describe chunav-sathi --region=us-central1 --project=${{ secrets.GCP_PROJECT_ID }} --format='value(status.url)')
           echo "✅ Deployment successful!"
           echo "Service URL: $URL"
