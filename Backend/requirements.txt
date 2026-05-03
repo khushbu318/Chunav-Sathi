@@ -4,3 +4,12 @@ google-cloud-aiplatform
 pydantic
 python-dotenv
 googlemaps
+pytest
+pytest-asyncio
+httpx
+python-multipart
+slowapi
+redis
+python-json-logger
+gunicorn
+pytest-cov

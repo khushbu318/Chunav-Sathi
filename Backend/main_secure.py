@@ -391,6 +391,12 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# Add security middleware
+app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=["localhost", "127.0.0.1"]  # Add your domain here
+)
+
 # Add CORS middleware with secure configuration
 app.add_middleware(
     CORSMiddleware,
@@ -429,11 +435,9 @@ async def health_check(request: Request):
 
 
 @app.post("/api/chat")
-async def chat(request: ChatRequest, http_request: Request = None):
+async def chat(request: ChatRequest, http_request: Request):
     """Chat endpoint with Vertex AI"""
-    if http_request is None:
-        from fastapi import Request as _Request
-    client_ip = http_request.client.host if http_request and http_request.client else "unknown"
+    client_ip = http_request.client.host if http_request.client else "unknown"
 
     # Rate limiting check
     if not rate_limiter.is_allowed(client_ip):
@@ -520,7 +524,7 @@ async def find_booths(
     http_request: Request = None
 ):
     """Find polling booths and election offices"""
-    client_ip = http_request.client.host if http_request and http_request.client else "unknown"
+    client_ip = http_request.client.host if http_request.client else "unknown"
 
     # Rate limiting check
     if not rate_limiter.is_allowed(client_ip):
