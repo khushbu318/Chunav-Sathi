@@ -324,7 +324,7 @@ export default function VoterJourney() {
           </button>
 
           <div className="journey-progress" role="progressbar" aria-valuenow={currentStep + 1} aria-valuemin={1} aria-valuemax={stages.length} aria-label={`Step ${currentStep + 1} of ${stages.length}`}>
-            {stages.map((stage, i) => (
+            {stages.map((_stage, i) => (
               <motion.div
                 key={i}
                 animate={
