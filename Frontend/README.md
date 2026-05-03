@@ -13,4 +13,4 @@ Example:
 ```powershell
 $env:GOOGLE_APPLICATION_CREDENTIALS="C:\secure\gcp\service-account.json"
 ```
-echo "# CI/CD check with more added permissions"
+echo "# CI/CD check with more added permissions of WIF"
