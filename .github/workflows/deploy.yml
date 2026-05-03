@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
@@ -16,10 +13,10 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     permissions:
       contents: read
-      id-token: write
+      id-token: write   # required for WIF
 
     steps:
       - name: Checkout code
@@ -29,33 +26,33 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
-          service_account_email: ${{ secrets.WIF_SERVICE_ACCOUNT }}
-
-      - name: Debug identity
-        run: |
-          gcloud auth list
-          gcloud config list
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
-      - name: Set project ID
-        run: |
-          gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+      - name: Verify identity (DEBUG)
+        run: gcloud auth list
 
-      - name: Deploy to Cloud Run (from source)
+      - name: Set project ID
+        run: gcloud config set project $PROJECT_ID
+
+      - name: Deploy to Cloud Run
         run: |
-          gcloud run deploy chunav-sathi \
+          gcloud run deploy $SERVICE_NAME \
             --source=. \
-            --region=us-central1 \
+            --region=$REGION \
             --platform=managed \
             --allow-unauthenticated \
             --port=8080 \
-            --project=${{ secrets.GCP_PROJECT_ID }} \
+            --project=$PROJECT_ID \
             --quiet
 
       - name: Get Cloud Run URL
         run: |
-          URL=$(gcloud run services describe chunav-sathi --region=us-central1 --project=${{ secrets.GCP_PROJECT_ID }} --format='value(status.url)')
+          URL=$(gcloud run services describe $SERVICE_NAME \
+            --region=$REGION \
+            --project=$PROJECT_ID \
+            --format='value(status.url)')
           echo "✅ Deployment successful!"
           echo "Service URL: $URL"
