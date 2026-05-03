@@ -34,31 +34,44 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') || ''
 // --- Components ---
 
 const SidebarRail = ({ activeTab, setTab, onSettings }: any) => (
-  <div className="sidebar-rail">
-    <div className="w-[34px] h-[34px] rounded-full bg-gradient-to-br from-whatsapp-orange to-whatsapp-yellow flex items-center justify-center text-[15px] cursor-pointer mb-2" onClick={() => setTab('chats')}>
+  <nav className="sidebar-rail" aria-label="Main navigation">
+    <button
+      className="w-[34px] h-[34px] rounded-full bg-gradient-to-br from-whatsapp-orange to-whatsapp-yellow flex items-center justify-center text-[15px] cursor-pointer mb-2 focus:outline-2 focus:outline-offset-2 focus:outline-whatsapp-green"
+      onClick={() => setTab('chats')}
+      aria-label="Chunav Sathi Home"
+      aria-current={activeTab === 'chats' ? 'page' : undefined}
+    >
       🗳
-    </div>
-    <div className="rail-divider"></div>
+    </button>
+    <div className="rail-divider" role="separator" aria-hidden="true"></div>
     <button
       className={`rail-btn ${activeTab === 'chats' ? 'active text-whatsapp-green' : ''}`}
       onClick={() => setTab('chats')}
-      title="Chats"
+      aria-label="Chats"
+      aria-current={activeTab === 'chats' ? 'page' : undefined}
+      aria-pressed={activeTab === 'chats'}
     >
       <MessageSquare size={20} />
-      <span className="rail-badge">5</span>
+      <span className="rail-badge" aria-hidden="true">5</span>
     </button>
     <button
       className={`rail-btn ${activeTab === 'status' ? 'active text-whatsapp-green' : ''}`}
       onClick={() => setTab('status')}
-      title="Status — FAQ Stories"
+      aria-label="FAQ Stories and Help"
+      aria-current={activeTab === 'status' ? 'page' : undefined}
+      aria-pressed={activeTab === 'status'}
     >
       <HelpCircle size={20} />
     </button>
-    <div className="rail-spacer"></div>
-    <button className="rail-btn" onClick={onSettings} title="Settings">
+    <div className="rail-spacer" aria-hidden="true"></div>
+    <button
+      className="rail-btn"
+      onClick={onSettings}
+      aria-label="Settings"
+    >
       <Settings size={20} />
     </button>
-  </div>
+  </nav>
 );
 
 const ChatItem = ({ id, icon: Icon, colorClass, name, preview, meta, active, onClick, tabType }: any) => {
@@ -66,12 +79,17 @@ const ChatItem = ({ id, icon: Icon, colorClass, name, preview, meta, active, onC
   const faqCount = meta?.faqCount || 1;
 
   return (
-    <div
+    <button
       onClick={() => onClick && onClick(id)}
       className={`chat-item ${active ? 'active' : ''}`}
+      aria-current={active ? 'true' : undefined}
+      aria-label={`${name}: ${preview}`}
+      role="option"
+      aria-selected={active}
     >
       <div
         className={`avatar w-11 h-11 relative flex items-center justify-center rounded-full transition-transform duration-200 active:scale-95 shadow-md`}
+        aria-hidden="true"
         style={isStatus ? {
           background: `repeating-conic-gradient(#00a884 0% ${100 / faqCount - 2}%, transparent ${100 / faqCount - 2}% ${100 / faqCount}%)`
         } : {
@@ -92,12 +110,12 @@ const ChatItem = ({ id, icon: Icon, colorClass, name, preview, meta, active, onC
         <div className="chat-preview truncate text-whatsapp-subtext">{preview}</div>
       </div>
       <div className="chat-meta">
-        <span className="chat-time font-medium">
+        <span className="chat-time font-medium" aria-hidden="true">
           {isStatus ? (meta?.faqCount ? `${meta.faqCount} FAQs` : '') : (meta?.time)}
         </span>
-        {meta?.badge && !isStatus && <span className="badge scale-110">{meta.badge}</span>}
+        {meta?.badge && !isStatus && <span className="badge scale-110" aria-hidden="true">{meta.badge}</span>}
       </div>
-    </div>
+    </button>
   );
 };
 
@@ -105,34 +123,46 @@ const ChatItem = ({ id, icon: Icon, colorClass, name, preview, meta, active, onC
 
 const HomePanel = ({ onQuickAccess }: any) => (
   <div className="panel-home">
-    <div className="home-logo shadow-lg">🗳</div>
+    <div className="home-logo shadow-lg" aria-hidden="true">🗳</div>
     <div className="text-center">
-      <div className="text-[22px] font-medium text-whatsapp-text">Chunav Sathi</div>
-      <div className="text-[13px] text-whatsapp-subtext mt-1.5 max-w-[300px] leading-relaxed">
+      <h1 className="text-[22px] font-medium text-whatsapp-text">Chunav Sathi</h1>
+      <p className="text-[13px] text-whatsapp-subtext mt-1.5 max-w-[300px] leading-relaxed">
         Your trusted guide to India's elections — in your language, your way.
-      </div>
+      </p>
     </div>
-    <div className="flex gap-2 flex-wrap justify-center">
-      <span className="bg-[#0d2e27] text-whatsapp-green px-3 py-1 rounded-full text-xs font-medium border border-whatsapp-green/20">8 languages</span>
-      <span className="bg-[#2e2a0d] text-whatsapp-yellow px-3 py-1 rounded-full text-xs font-medium border border-whatsapp-yellow/20">Google Maps</span>
-      <span className="bg-[#1a2731] text-whatsapp-subtext px-3 py-1 rounded-full text-xs font-medium border border-whatsapp-border">Gemini AI</span>
+    <div className="flex gap-2 flex-wrap justify-center" role="list">
+      <span className="bg-[#0d2e27] text-whatsapp-green px-3 py-1 rounded-full text-xs font-medium border border-whatsapp-green/20" role="listitem">8 languages</span>
+      <span className="bg-[#2e2a0d] text-whatsapp-yellow px-3 py-1 rounded-full text-xs font-medium border border-whatsapp-yellow/20" role="listitem">Google Maps</span>
+      <span className="bg-[#1a2731] text-whatsapp-subtext px-3 py-1 rounded-full text-xs font-medium border border-whatsapp-border" role="listitem">Gemini AI</span>
     </div>
-    <div className="flex gap-3 justify-center flex-wrap mt-2">
-      <div className="quick-card" onClick={() => onQuickAccess('journey')}>
-        <div className="text-3xl mb-2">🚶</div>
+    <div className="flex gap-3 justify-center flex-wrap mt-2" role="group" aria-label="Quick access options">
+      <button
+        className="quick-card focus:outline-2 focus:outline-offset-2 focus:outline-whatsapp-green"
+        onClick={() => onQuickAccess('journey')}
+        aria-label="First Time Voter - Interactive Journey"
+      >
+        <div className="text-3xl mb-2" aria-hidden="true">🚶</div>
         <div className="text-[13px] text-whatsapp-text font-medium">First Time Voter</div>
         <div className="text-[11px] text-whatsapp-subtext mt-1">Interactive Journey</div>
-      </div>
-      <div className="quick-card" onClick={() => onQuickAccess('learn')}>
-        <div className="text-3xl mb-2">📚</div>
+      </button>
+      <button
+        className="quick-card focus:outline-2 focus:outline-offset-2 focus:outline-whatsapp-green"
+        onClick={() => onQuickAccess('learn')}
+        aria-label="Election Process - Learn basics"
+      >
+        <div className="text-3xl mb-2" aria-hidden="true">📚</div>
         <div className="text-[13px] text-whatsapp-text font-medium">Election Process</div>
         <div className="text-[11px] text-whatsapp-subtext mt-1">Learn basics</div>
-      </div>
-      <div className="quick-card" onClick={() => onQuickAccess('chat')}>
-        <div className="text-3xl mb-2">🤖</div>
+      </button>
+      <button
+        className="quick-card focus:outline-2 focus:outline-offset-2 focus:outline-whatsapp-green"
+        onClick={() => onQuickAccess('chat')}
+        aria-label="Ask Anything - AI with voice call support"
+      >
+        <div className="text-3xl mb-2" aria-hidden="true">🤖</div>
         <div className="text-[13px] text-whatsapp-text font-medium">Ask Anything</div>
         <div className="text-[11px] text-whatsapp-subtext mt-1">AI + voice call</div>
-      </div>
+      </button>
     </div>
   </div>
 );
@@ -387,9 +417,9 @@ export default function App() {
         )}
       </div>
 
-      {/* Right Panel */}
-      <div className={`right-panel ${isMobile && mobileViewMode === 'list' ? 'mobile-hidden' : ''}`}>
-        <div className="right-bg"></div>
+      {/* Right Panel - Main Content */}
+      <main id="main-content" className={`right-panel ${isMobile && mobileViewMode === 'list' ? 'mobile-hidden' : ''}`}>
+        <div className="right-bg" aria-hidden="true"></div>
 
         <AnimatePresence mode="wait">
           {activePanel === 'home' ? (
@@ -460,15 +490,20 @@ export default function App() {
 
                 {activePanel === 'chat' ? (
                   <>
-                    <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 z-10">
+                    <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 z-10" role="log" aria-live="polite" aria-label="Chat messages">
                       <div className="text-center my-2">
-                        <span className="bg-[#1a2731] text-whatsapp-subtext text-[11px] px-3 py-1 rounded-full">Today</span>
+                        <span className="bg-[#1a2731] text-whatsapp-subtext text-[11px] px-3 py-1 rounded-full" role="status" aria-hidden="true">Today</span>
                       </div>
                       {messages.map((m, i) => (
-                        <div key={i} className={`msg ${m.type === 'bot' ? 'bot' : 'user'}`}>
+                        <div
+                          key={i}
+                          className={`msg ${m.type === 'bot' ? 'bot' : 'user'}`}
+                          role="article"
+                          aria-label={`${m.type === 'bot' ? 'Assistant' : 'Your'} message: ${m.text.substring(0, 50)}...`}
+                        >
                           <div className="msg-bubble">
                             {/* Float the time first so text wraps around it — WhatsApp trick */}
-                            <span className="msg-meta">
+                            <span className="msg-meta" aria-hidden="true">
                               <span className="msg-time">{m.time}</span>
                               {m.type === 'user' && <span className="msg-ticks">✓✓</span>}
                             </span>
@@ -496,21 +531,29 @@ export default function App() {
                       )}
 
                     </div>
-                    <div className="chat-input-bar">
-                      <button className="w-[34px] h-[34px] rounded-full bg-whatsapp-hover flex items-center justify-center text-[#aebac1] shrink-0">
+                    <div className="chat-input-bar" role="group" aria-label="Message input controls">
+                      <button
+                        className="w-[34px] h-[34px] rounded-full bg-whatsapp-hover flex items-center justify-center text-[#aebac1] shrink-0 focus:outline-2 focus:outline-offset-2 focus:outline-whatsapp-green"
+                        aria-label="Send voice message"
+                        onClick={() => setIsCalling(true)}
+                      >
                         <Mic size={18} />
                       </button>
+                      <label htmlFor="chat-input" className="sr-only">Message input</label>
                       <input
+                        id="chat-input"
                         className="chat-text-input"
                         placeholder="Message Chunav Sathi..."
                         value={chatInput}
                         onChange={(e) => setChatInput(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                        aria-label="Type your message"
                       />
                       <button
-                        className={`send-btn transition-colors duration-200 ${!chatInput.trim() ? 'opacity-50 cursor-not-allowed bg-[#2a3942] text-[#8696a0]' : 'bg-[#00a884] text-white hover:bg-[#06cf9c]'}`}
+                        className={`send-btn transition-colors duration-200 focus:outline-2 focus:outline-offset-2 focus:outline-whatsapp-green ${!chatInput.trim() ? 'opacity-50 cursor-not-allowed bg-[#2a3942] text-[#8696a0]' : 'bg-[#00a884] text-white hover:bg-[#06cf9c]'}`}
                         onClick={() => handleSend()}
                         disabled={!chatInput.trim()}
+                        aria-label="Send message"
                       >
                         <Send size={16} fill={chatInput.trim() ? "currentColor" : "none"} />
                       </button>
@@ -542,7 +585,7 @@ export default function App() {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </main>
 
       {/* Voice Call Overlay */}
       <AnimatePresence>

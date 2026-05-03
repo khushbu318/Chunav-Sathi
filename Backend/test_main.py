@@ -226,6 +226,52 @@ class TestChatEndpoint:
 
 
 # ============================================================================
+# API Endpoint Tests - Constituencies
+# ============================================================================
+
+class TestConstituenciesEndpoint:
+    """Test constituencies data endpoint"""
+
+    @patch('main.bq_client')
+    def test_get_constituencies_success(self, mock_bq_client):
+        """Should return constituencies data from BigQuery"""
+        # Mock BigQuery query results
+        mock_query_job = MagicMock()
+        mock_row = MagicMock()
+        mock_row.id = 'MH-01'
+        mock_row.name = 'Mumbai North'
+        mock_row.state = 'MH'
+        mock_row.stateName = 'Maharashtra'
+        mock_row.mpName = 'Piyush Goyal'
+        mock_row.mpParty = 'BJP'
+        mock_row.mpPhotoUrl = ''
+        mock_row.votes = 641882
+        mock_row.voteShare = 55.2
+        mock_row.margin = 201178
+        mock_row.turnout = 54.8
+        mock_row.phase = 5
+        mock_row.nextElectionDate = '2029-04-01'
+        mock_query_job.result.return_value = [mock_row]
+        mock_bq_client.query.return_value = mock_query_job
+
+        response = client.get("/api/constituencies")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "constituencies" in data
+        assert len(data["constituencies"]) == 1
+        assert data["constituencies"][0]["name"] == "Mumbai North"
+
+    @patch('main.bq_client', None)
+    def test_get_constituencies_bq_not_configured(self):
+        """Should return 503 when BigQuery not configured"""
+        response = client.get("/api/constituencies")
+
+        assert response.status_code == 503
+        assert "not configured" in response.json()["detail"]
+
+
+# ============================================================================
 # API Endpoint Tests - Find Booths
 # ============================================================================
 

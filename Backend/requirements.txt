@@ -13,3 +13,4 @@ redis
 python-json-logger
 gunicorn
 pytest-cov
+google-cloud-bigquery

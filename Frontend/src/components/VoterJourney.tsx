@@ -313,16 +313,18 @@ export default function VoterJourney() {
           <button
             onClick={handlePrev}
             disabled={currentStep === 0}
-            className={`nav-button nav-button-prev transition-all duration-300 ${
+            className={`nav-button nav-button-prev transition-all duration-300 focus:outline-2 focus:outline-offset-2 focus:outline-whatsapp-green ${
               currentStep === 0 ? "opacity-0 pointer-events-none" : ""
             }`}
+            aria-label={`Go to previous step: ${currentStep > 0 ? stages[currentStep - 1].title : 'Start'}`}
+            aria-disabled={currentStep === 0}
           >
             <ChevronLeft size={22} className="shrink-0" />
             <span className="nav-button-label">Back</span>
           </button>
 
-          <div className="journey-progress">
-            {stages.map((_, i) => (
+          <div className="journey-progress" role="progressbar" aria-valuenow={currentStep + 1} aria-valuemin={1} aria-valuemax={stages.length} aria-label={`Step ${currentStep + 1} of ${stages.length}`}>
+            {stages.map((stage, i) => (
               <motion.div
                 key={i}
                 animate={
@@ -333,6 +335,7 @@ export default function VoterJourney() {
                   repeat: i === currentStep ? Infinity : 0,
                 }}
                 className={`progress-indicator ${i === currentStep ? "active" : "inactive"}`}
+                aria-hidden="true"
               />
             ))}
           </div>
@@ -344,6 +347,7 @@ export default function VoterJourney() {
                 initial={{ opacity: 0, y: -6 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max bg-[#1a2731] border border-whatsapp-green/30 text-whatsapp-green text-[11px] font-semibold px-3 py-1.5 rounded-full shadow-lg whitespace-nowrap"
+                role="tooltip"
               >
                 Please vote before continuing.
               </motion.div>

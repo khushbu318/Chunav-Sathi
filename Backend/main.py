@@ -7,12 +7,12 @@ from typing import List, Optional, Tuple, Dict, Any
 from collections import defaultdict
 from datetime import datetime, timedelta
 
-from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, validator, Field
+from pydantic import BaseModel, Field, field_validator
 from dotenv import load_dotenv
 
 import vertexai
@@ -20,6 +20,7 @@ from vertexai.generative_models import GenerativeModel, Content, Part
 import googlemaps
 from urllib.parse import quote_plus
 from google.cloud import aiplatform
+from google.cloud import bigquery
 
 # ============================================================================
 # Configuration & Security Setup
@@ -56,6 +57,35 @@ ALLOWED_ORIGINS = (
     [origin.strip() for origin in ALLOWED_ORIGIN.split(",") if origin.strip()]
     or ["http://localhost:3000", "http://localhost:5173"]  # Default to localhost only
 )
+
+# Host and transport security configuration
+REQUIRE_HTTPS = os.getenv("REQUIRE_HTTPS", "false").lower() in ("1", "true", "yes")
+
+ALLOWED_HOSTS = []
+for origin in ALLOWED_ORIGINS:
+    host = re.sub(r"^https?://", "", origin).split("/")[0].split(":")[0]
+    if host:
+        ALLOWED_HOSTS.append(host)
+for required_host in ["localhost", "127.0.0.1", "testserver"]:
+    if required_host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(required_host)
+
+SECURE_HEADERS = {
+    "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "same-origin",
+    "Permissions-Policy": "geolocation=()",
+    "X-XSS-Protection": "1; mode=block",
+    "Content-Security-Policy": (
+        "default-src 'self'; "
+        "img-src 'self' data: https:; "
+        "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+        "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+        "connect-src 'self' https://*.googleapis.com https://*.gstatic.com; "
+        "frame-ancestors 'none'; base-uri 'self';"
+    ),
+}
 
 STATIC_DIR = os.getenv(
     "STATIC_DIR",
@@ -166,7 +196,8 @@ class ChatMessage(BaseModel):
     role: str = Field(..., pattern="^(user|model)$")
     content: str = Field(..., min_length=1, max_length=MAX_MESSAGE_LENGTH)
 
-    @validator('role')
+    @field_validator('role')
+    @classmethod
     def validate_role(cls, v):
         if v not in ['user', 'model']:
             raise ValueError('Role must be "user" or "model"')
@@ -178,15 +209,18 @@ class ChatRequest(BaseModel):
     history: Optional[List[ChatMessage]] = Field(default_factory=list)
     language: Optional[str] = "English"
 
-    @validator('message')
+    @field_validator('message')
+    @classmethod
     def sanitize_message(cls, v):
         return InputSanitizer.sanitize_string(v, MAX_MESSAGE_LENGTH)
 
-    @validator('language')
+    @field_validator('language')
+    @classmethod
     def validate_lang(cls, v):
         return InputSanitizer.validate_language(v)
 
-    @validator('history')
+    @field_validator('history')
+    @classmethod
     def validate_history(cls, v):
         if len(v) > MAX_HISTORY_SIZE:
             raise ValueError(f'History cannot exceed {MAX_HISTORY_SIZE} messages')
@@ -198,16 +232,21 @@ class FindBoothsRequest(BaseModel):
     lat: Optional[float] = None
     lng: Optional[float] = None
 
-    @validator('location_query')
-    def sanitize_location(cls, v):
-        return InputSanitizer.sanitize_string(v, MAX_LOCATION_LENGTH)
 
-    @validator('lat', 'lng', pre=True, always=True)
-    def validate_coords(cls, v):
-        if v is not None:
-            if not isinstance(v, (int, float)):
-                raise ValueError('Coordinates must be numbers')
-        return v
+class Constituency(BaseModel):
+    id: str
+    name: str
+    state: str
+    stateName: str
+    mpName: str
+    mpParty: str
+    mpPhotoUrl: Optional[str] = ""
+    votes: int
+    voteShare: float
+    margin: int
+    turnout: float
+    phase: int
+    nextElectionDate: str
 
 
 # ============================================================================
@@ -255,6 +294,15 @@ try:
 except Exception as e:
     logger.error(f"Vertex AI initialization failed: {e}")
     model = None
+
+# Initialize BigQuery client
+bq_client = None
+try:
+    bq_client = bigquery.Client(project=PROJECT_ID)
+    logger.info("BigQuery client initialized successfully")
+except Exception as e:
+    logger.error(f"BigQuery client initialization failed: {e}")
+    bq_client = None
 
 # ============================================================================
 # Utility Functions
@@ -390,6 +438,27 @@ app = FastAPI(
     description="Indian Election Helping Assistant API",
     version="1.0.0"
 )
+
+# Enforce trusted hosts and HTTPS if configured
+app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=ALLOWED_HOSTS,
+)
+
+@app.middleware("http")
+async def secure_headers_middleware(request: Request, call_next):
+    if REQUIRE_HTTPS:
+        forwarded_proto = request.headers.get("x-forwarded-proto", request.url.scheme)
+        if forwarded_proto != "https":
+            return JSONResponse(
+                status_code=403,
+                content={"detail": "HTTPS is required. Please use a secure endpoint."}
+            )
+
+    response = await call_next(request)
+    for header_name, header_value in SECURE_HEADERS.items():
+        response.headers.setdefault(header_name, header_value)
+    return response
 
 # Add CORS middleware with secure configuration
 app.add_middleware(
@@ -620,6 +689,13 @@ async def list_available_models(http_request: Request):
     client_ip = http_request.client.host if http_request.client else "unknown"
     logger.info(f"Debug models request from {client_ip}")
 
+    if not rate_limiter.is_allowed(client_ip):
+        logger.warning(f"Rate limit exceeded for {client_ip}")
+        raise HTTPException(
+            status_code=429,
+            detail="Too many requests. Please try again later."
+        )
+
     try:
         aiplatform_args = {"location": LOCATION}
         if PROJECT_ID:
@@ -642,6 +718,100 @@ async def list_available_models(http_request: Request):
     except Exception as e:
         logger.error(f"Debug models endpoint error: {e}", exc_info=True)
         return {"error": "Failed to list models"}
+
+
+@app.get("/api/constituencies")
+async def get_constituencies(http_request: Request):
+    """Get all constituencies data from BigQuery"""
+    client_ip = http_request.client.host if http_request.client else "unknown"
+    logger.info(f"Constituencies request from {client_ip}")
+
+    if not rate_limiter.is_allowed(client_ip):
+        logger.warning(f"Rate limit exceeded for {client_ip}")
+        raise HTTPException(
+            status_code=429,
+            detail="Too many requests. Please try again later."
+        )
+
+    try:
+        if bq_client is None:
+            logger.error("BigQuery client not initialized")
+            raise HTTPException(
+                status_code=503,
+                detail="BigQuery service is not configured."
+            )
+
+        # Query BigQuery for constituencies data
+        query = """
+        SELECT
+            id,
+            name,
+            state,
+            stateName,
+            mpName,
+            mpParty,
+            mpPhotoUrl,
+            votes,
+            voteShare,
+            margin,
+            turnout,
+            phase,
+            nextElectionDate
+        FROM `chunav_sathi.constituencies`
+        ORDER BY state, name
+        """
+
+        query_job = bq_client.query(query)
+        results = query_job.result()
+
+        constituencies = []
+        for row in results:
+            constituency = Constituency(
+                id=row.id,
+                name=row.name,
+                state=row.state,
+                stateName=row.stateName,
+                mpName=row.mpName,
+                mpParty=row.mpParty,
+                mpPhotoUrl=row.mpPhotoUrl or "",
+                votes=row.votes,
+                voteShare=row.voteShare,
+                margin=row.margin,
+                turnout=row.turnout,
+                phase=row.phase,
+                nextElectionDate=row.nextElectionDate
+            )
+            constituencies.append(constituency.model_dump())
+
+        logger.info(f"Retrieved {len(constituencies)} constituencies for {client_ip}")
+
+        return {"constituencies": constituencies}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Constituencies endpoint error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@app.get("/api/constituencies-geojson")
+async def get_constituencies_geojson(http_request: Request):
+    """Get constituencies GeoJSON data."""
+    client_ip = http_request.client.host if http_request.client else "unknown"
+    logger.info(f"GeoJSON request from {client_ip}")
+
+    if not rate_limiter.is_allowed(client_ip):
+        logger.warning(f"Rate limit exceeded for {client_ip}")
+        raise HTTPException(
+            status_code=429,
+            detail="Too many requests. Please try again later."
+        )
+
+    logger.warning("GeoJSON endpoint is disabled. No Cloud Storage bucket configured.")
+    raise HTTPException(
+        status_code=503,
+        detail="GeoJSON service is currently unavailable."
+    )
 
 
 # Serve frontend static assets
