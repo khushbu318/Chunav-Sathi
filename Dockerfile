@@ -5,11 +5,14 @@ WORKDIR /app/frontend
 # Copy frontend package metadata and config
 COPY Frontend/package.json Frontend/package-lock.json ./
 COPY Frontend/vite.config.ts ./
+COPY Frontend/eslint.config.js ./
 COPY Frontend/tsconfig.json Frontend/tsconfig.app.json Frontend/tsconfig.node.json ./
 COPY Frontend/postcss.config.js Frontend/tailwind.config.js ./
 COPY Frontend/index.html ./
 COPY Frontend/public ./public
 COPY Frontend/src ./src
+COPY Frontend/packages ./packages
+COPY Frontend/apps ./apps
 
 RUN npm ci
 RUN npm run build
