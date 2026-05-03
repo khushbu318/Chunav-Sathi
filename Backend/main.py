@@ -61,14 +61,24 @@ ALLOWED_ORIGINS = (
 # Host and transport security configuration
 REQUIRE_HTTPS = os.getenv("REQUIRE_HTTPS", "false").lower() in ("1", "true", "yes")
 
+# Determine if running on Cloud Run
+IS_CLOUD_RUN = os.getenv("K_SERVICE") is not None or os.getenv("PORT") == "8080"
+
 ALLOWED_HOSTS = []
 for origin in ALLOWED_ORIGINS:
     host = re.sub(r"^https?://", "", origin).split("/")[0].split(":")[0]
     if host:
         ALLOWED_HOSTS.append(host)
+
+# Add default hosts for all environments
 for required_host in ["localhost", "127.0.0.1", "testserver"]:
     if required_host not in ALLOWED_HOSTS:
         ALLOWED_HOSTS.append(required_host)
+
+# For Cloud Run, accept all *.run.app domains if no explicit ALLOWED_ORIGIN is set
+if IS_CLOUD_RUN and not ALLOWED_ORIGIN:
+    ALLOWED_HOSTS.append("*.run.app")
+    logger.info(f"Cloud Run detected. Allowing *.run.app domains. Allowed hosts: {ALLOWED_HOSTS}")
 
 SECURE_HEADERS = {
     "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
